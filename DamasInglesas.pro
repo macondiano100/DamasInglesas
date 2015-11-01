@@ -30,14 +30,7 @@ HEADERS  += \
     modelo/Ficha.h \
     modelo/Jugador.h \
     modelo/Tablero.h \
-    visual/visualboardcontroler.h \
-    modelo/ConstantesEstadoDelJuego.h \
-    modelo/Exception.h \
-    modelo/MySocket.h \
-    modelo/NoSuchMessageExpectedException.h \
-    modelo/socketExceptions.h \
-    modelo/utilidades.h \
-    modelo/utilidadesVariadas.h
+    visual/visualboardcontroler.h
 
 FORMS    += \
     visual/Dialogoconeccion.ui \
