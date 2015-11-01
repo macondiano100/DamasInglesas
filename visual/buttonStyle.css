@@ -1,0 +1,19 @@
+VisualBoardquare
+{
+    border:none;
+}
+VisualBoardSquare[color="red"] { 
+	background-color: red; 
+	padding: 10px;
+        border:none;
+}
+VisualBoardSquare[color="black"] { 
+        background-color: black;
+        border:none;
+}
+VisualBoardSquare[highlight="true"]
+{
+border-width: 2px;
+border-style: solid;
+border-color: yellow;
+}

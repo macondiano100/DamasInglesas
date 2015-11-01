@@ -1,0 +1,208 @@
+# depslib dependency file v1.0
+1443892905 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/main.cpp
+	<iostream>
+	"Tablero.h"
+	"Ficha.h"
+
+1444445114 
+
+1443143049 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Coloreable.h
+
+1443142737 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Ficha.h
+	"Coloreable.h"
+
+1443896721 e.h"
+
+1443143049 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Coloreable.h
+
+1443893121 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Jugador.h
+	<iostream>
+	"Coloreable.h"
+
+1444077297 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Tablero.h
+	<iostream>
+	"Ficha.h"
+	"Jugador.h"
+	"Ficha.h"
+
+1443142737 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Ficha.h
+	"Coloreable.h"
+
+1443893121 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Jugador.h
+	<iostream>
+	"Coloreable.h"
+
+1444078458 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Tablero.h
+	<iostream>
+	"Ficha.h"
+	"Jugador.h"
+	"Ficha.h"
+
+1443146649 source:c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\coloreable.h
+
+1443146337 source:c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\ficha.h
+	"Coloreable.h"
+
+1443146649 c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\coloreable.h
+
+1443896721 source:c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\jugador.h
+	<iostream>
+	"Coloreable.h"
+
+1444445114 source:c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\tablero.h
+	<iostream>
+	"Ficha.h"
+	"Jugador.h"
+	"Ficha.h"
+
+1443146337 c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\ficha.h
+	"Coloreable.h"
+
+1443896721 c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\jugador.h
+	<iostream>
+	"Coloreable.h"
+
+1444445361 source:c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\main.cpp
+	<iostream>
+	"Tablero.h"
+	"Ficha.h"
+
+1444445114 c:\users\diego olvera\dropbox\universidad semestre 5\ppi\trabajos\juego\damas inglesas\damas inglesas\tablero.h
+	<iostream>
+	"Ficha.h"
+	"Jugador.h"
+	"Ficha.h"
+
+1443143049 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Coloreable.h
+
+1443142737 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Ficha.h
+	"Coloreable.h"
+
+1443143049 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Coloreable.h
+
+1445088812 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Jugador.h
+	<iostream>
+	"Coloreable.h"
+
+1445375053 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/main.cpp
+	<iostream>
+	"Tablero.h"
+	"Ficha.h"
+	"MySocket.h"
+	"ConstantesEstadoDelJuego.h"
+	"NoSuchMessageExpectedException.h"
+	"utilidades.h"
+
+1445369942 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Tablero.h
+	<iostream>
+	"Ficha.h"
+	"Jugador.h"
+
+1443142737 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Ficha.h
+	"Coloreable.h"
+
+1445088812 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Jugador.h
+	<iostream>
+	"Coloreable.h"
+
+1445369942 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Tablero.h
+	<iostream>
+	"Ficha.h"
+	"Jugador.h"
+
+1445292791 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/ConstantesEstadoDelJuego.h
+
+1445374814 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/MySocket.h
+	"utilidadesVariadas.h"
+	"socketExceptions.h"
+	<winsock2.h>
+	<windows.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<stdio.h>
+	<errno.h>
+	<stdlib.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<netdb.h>
+	<fcntl.h>
+	<iostream>
+	<cstdio>
+	<cstring>
+	<cstdlib>
+	<unistd.h>
+	<netdb.h>
+	<arpa/inet.h>
+
+1443019650 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Exception.h
+	<iostream>
+
+1443106045 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/utilidadesSockets.h
+	<winsock2.h>
+	<windows.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<stdio.h>
+	<errno.h>
+	<stdlib.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<netdb.h>
+	<iostream>
+	<sstream>
+	<cstdio>
+	<stdio.h>
+	<errno.h>
+	<stdlib.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<netdb.h>
+	<fcntl.h>
+	<iostream>
+	<cstdio>
+	<cstring>
+	<cstdlib>
+	<unistd.h>
+	<netdb.h>
+	<arpa/inet.h>
+
+1445374549 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/utilidadesVariadas.h
+	<sstream>
+	<windows.h>
+	<unistd.h>
+
+1444963176 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/EstadoDelProtocolo.h
+
+1444963176 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/EstadoDelProtocolo.h
+
+1445292791 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/ConstantesEstadoDelJuego.h
+
+1445293134 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/NoSuchMessageExpectedException.h
+	"Exception.h"
+
+1445293134 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/NoSuchMessageExpectedException.h
+	"Exception.h"
+
+1445370314 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/Tablero.cpp
+	"Tablero.h"
+
+1445374650 source:/mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/utilidades.cpp
+	"utilidades.h"
+
+1445375076 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/utilidades.h
+	<bitset>
+	"NoSuchMessageExpectedException.h"
+	"MySocket.h"
+	"ConstantesEstadoDelJuego.h"
+
+1445374795 /mnt/diego_windows/Users/Diego Olvera/Dropbox/Universidad semestre 5/PPI/trabajos/juego/Damas inglesas/Damas Inglesas/socketExceptions.h
+	"Exception.h"
+

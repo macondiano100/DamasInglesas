@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>CHECKERS.ICO</file>
+    </qresource>
+    <qresource prefix="/style">
+        <file>buttonStyle.css</file>
+    </qresource>
+    <qresource prefix="/image">
+        <file>resources/piezaRoja.png</file>
+        <file>resources/piezaBlanca.png</file>
+        <file>resources/crown.png</file>
+    </qresource>
+</RCC>
