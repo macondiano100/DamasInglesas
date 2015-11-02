@@ -61,12 +61,9 @@ private:
     }
 
 public:
-    MySocket(string port):MySocket(toInt(port)){
+    MySocket(string port):MySocket(stoi(port)){
     }
-    MySocket(int port)throw (SocketException){
-        res=NULL;
-        sock6=nullptr;
-        sock4=nullptr;
+    MySocket(int port)throw (SocketException):sock4(nullptr),sock6(nullptr),res(nullptr),resSave(nullptr){
         struct addrinfo hints;
        struct addrinfo *result, *rp;
        int s;
@@ -78,7 +75,7 @@ public:
        hints.ai_canonname = NULL;
        hints.ai_addr = NULL;
        hints.ai_next = NULL;
-       s = getaddrinfo(NULL, toStr(port).c_str(), &hints, &result);
+       s = getaddrinfo(NULL, to_string(port).c_str(), &hints, &result);
        if (s != 0) {
             throw SocketException(gai_strerror(s));
        }
@@ -96,7 +93,7 @@ public:
        }
        freeaddrinfo(result);           /* No longer needed */
     }
-    MySocket(string port,string host)throw (SocketException){
+    MySocket(string port,string host)throw (SocketException):sock4(nullptr),sock6(nullptr),res(nullptr),resSave(nullptr){
         addrinfo hints;
         int n;
         bool seEncontroHost=false;
@@ -132,7 +129,7 @@ public:
             throw ConnectSocketException("No se pudo conectar al host");
         }
     }
-    MySocket(int port,string host) throw (SocketException):MySocket(toStr(port),host){
+    MySocket(int port,string host) throw (SocketException):MySocket(to_string(port),host){
 
     }
     ~MySocket(){
