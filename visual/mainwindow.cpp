@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     progresoConnecion=new QProgressDialog(tr("Esperando connecciones"),tr("Cancelar"),0,0,this);
     progresoConnecion->setFixedSize(width()/2,progresoConnecion->height());
     connect(ui->action_nueva_partida,SIGNAL(triggered()),this,SLOT(iniciarPartida()));
-    connect(progresoConnecion,&QProgressDialog::canceled,&connection::cancelarInicioPartida);
+    connect(progresoConnecion,&QProgressDialog::canceled,&MessagesSender::cancelarInicioPartida);
 }
 void MainWindow::unirseAPartida()
 {
@@ -20,7 +20,7 @@ void MainWindow::unirseAPartida()
 
 void MainWindow::iniciarPartida()
 {
-    QFuture<void> future=QtConcurrent::run(connection::iniciarPartida);
+    QFuture<void> future=QtConcurrent::run(MessagesSender::iniciarPartida);
     futureWatcher.setFuture(future);
     progresoConnecion->setModal(Qt::WindowModal);
     progresoConnecion->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
