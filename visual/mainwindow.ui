@@ -168,7 +168,7 @@
     <property name="title">
      <string>Partida</string>
     </property>
-    <addaction name="actionCrear_Nuevo"/>
+    <addaction name="action_nueva_partida"/>
     <addaction name="actionUnirse_A_Partida"/>
    </widget>
    <widget class="QMenu" name="menuAyuda">
@@ -191,7 +191,7 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionCrear_Nuevo">
+  <action name="action_nueva_partida">
    <property name="text">
     <string>Nueva Partida</string>
    </property>
@@ -224,24 +224,7 @@
  <resources>
   <include location="res.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>actionUnirse_A_Partida</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>unirseAPartida()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>330</x>
-     <y>178</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>unirseAPartida()</slot>
  </slots>

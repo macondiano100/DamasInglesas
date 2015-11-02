@@ -30,7 +30,15 @@ HEADERS  += \
     modelo/Ficha.h \
     modelo/Jugador.h \
     modelo/Tablero.h \
-    visual/visualboardcontroler.h
+    visual/visualboardcontroler.h \
+    modelo/connectionmanager.h \
+    modelo/connection/utilidadesVariadas.h \
+    modelo/connection/utilidades.h \
+    modelo/connection/ConstantesEstadoDelJuego.h \
+    modelo/connection/Exception.h \
+    modelo/connection/MySocket.h \
+    modelo/connection/NoSuchMessageExpectedException.h \
+    modelo/connection/socketExceptions.h
 
 FORMS    += \
     visual/Dialogoconeccion.ui \
@@ -39,5 +47,5 @@ FORMS    += \
 RESOURCES += \
     visual/res.qrc
 QMAKE_CXXFLAGS += -std=c++11
-
+QT += concurrent
 DISTFILES +=
