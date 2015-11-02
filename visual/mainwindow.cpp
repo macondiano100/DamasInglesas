@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "modelo/connectionmanager.h"
 #include <QtConcurrent>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,7 +19,7 @@ void MainWindow::unirseAPartida()
 
 void MainWindow::iniciarPartida()
 {
-    QFuture<void> future=QtConcurrent::run(MessagesSender::iniciarPartida);
+    QFuture<void> future=QtConcurrent::run(&MessagesSender::iniciarPartida);
     futureWatcher.setFuture(future);
     progresoConnecion->setModal(Qt::WindowModal);
     progresoConnecion->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);

@@ -9,7 +9,7 @@
 #define TAMANIO_BIT_SET 17
 using namespace std;
 
-void respuesta_a_mensajeDeSiSigoVivo(MySocket* socket){
+inline void respuesta_a_mensajeDeSiSigoVivo(MySocket* socket){
     char mensaje[3+1];
     memcpy(mensaje,FIRMA_DEL_PROTOCOLO,TAMANIO_FIRMA_DEL_PROTOCOLO);
     mensaje[2]=SI_SIGO_VIVO;
@@ -18,7 +18,7 @@ void respuesta_a_mensajeDeSiSigoVivo(MySocket* socket){
     cout<<"Mensaje enviado:"<<mensaje<<endl;
 }
 
-void asignaNumero(bitset<TAMANIO_BIT_SET>& bits,unsigned short& numero,int desde,int hasta){
+inline void asignaNumero(bitset<TAMANIO_BIT_SET>& bits,unsigned short& numero,int desde,int hasta){
     bitset<16> bitsSalida;
     int i=0;
     while(desde<=hasta){
@@ -26,7 +26,7 @@ void asignaNumero(bitset<TAMANIO_BIT_SET>& bits,unsigned short& numero,int desde
     }
     numero=(unsigned short)bitsSalida.to_ulong();
 }
-void fijaCoordenadas(char* mensaje,unsigned short& filaOrig,unsigned short& columnaOrig,
+inline void fijaCoordenadas(char* mensaje,unsigned short& filaOrig,unsigned short& columnaOrig,
     unsigned short& filaDest,unsigned short& columnaDest,bool& esFichaComida){
     unsigned int msnNumero;
     memcpy(&msnNumero,mensaje,3);
@@ -39,7 +39,7 @@ void fijaCoordenadas(char* mensaje,unsigned short& filaOrig,unsigned short& colu
 }
 
 
-void asignaBits(bitset<TAMANIO_BIT_SET>& bits,unsigned short num,int desde,int hasta){
+inline void asignaBits(bitset<TAMANIO_BIT_SET>& bits,unsigned short num,int desde,int hasta){
     unsigned char prueba=1;//Numero minimo.
     while(desde<=hasta){
         bits.set(desde++,num&prueba);
@@ -47,7 +47,7 @@ void asignaBits(bitset<TAMANIO_BIT_SET>& bits,unsigned short num,int desde,int h
     }
 }
 
-int fijaMensajeDeMovimiento(char* mensaje,unsigned short filaOrig,unsigned short columnaOrig,
+inline int fijaMensajeDeMovimiento(char* mensaje,unsigned short filaOrig,unsigned short columnaOrig,
     unsigned short filaDest,unsigned short columnaDest,bool esFichaComida){
     unsigned int msn;
     bitset<TAMANIO_BIT_SET> bits;

@@ -19,7 +19,8 @@ SOURCES +=\
     visual/visualboardsquare.cpp \
     main.cpp \
     modelo/Tablero.cpp \
-    visual/visualboardcontroler.cpp
+    visual/visualboardcontroler.cpp \
+    modelo/connectionmanager.cpp
 
 HEADERS  += \
     visual/Dialogoconeccion.h \

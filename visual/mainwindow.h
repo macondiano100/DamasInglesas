@@ -6,6 +6,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include "Dialogoconeccion.h"
+#include "modelo/connectionmanager.h"
 namespace Ui {
 class MainWindow;
 }

@@ -30,8 +30,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-socklen_t TAMANIO_SOCKET_4=sizeof(sockaddr_in);
-socklen_t TAMANIO_SOCKET_6=sizeof(sockaddr_in6);
+constexpr socklen_t TAMANIO_SOCKET_4=sizeof(sockaddr_in);
+constexpr socklen_t TAMANIO_SOCKET_6=sizeof(sockaddr_in6);
 #define BUF_SIZE 500
 #define TAMANIO_PUERTO 64
 
