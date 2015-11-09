@@ -5,6 +5,8 @@
 using namespace std;
 
 #include <bitset>
+#include <vector>
+#include <iterator>
 #include "NoSuchMessageExpectedException.h"
 #include "MySocket.h"
 #include "ConstantesEstadoDelJuego.h"
@@ -56,6 +58,37 @@ inline void asignaBits(bitset<TAMANIO_BIT_SET>& bits,unsigned short num,int desd
         bits.set(desde++,num&prueba);
         prueba<<=1;
     }
+}
+struct Movimiento
+{
+    unsigned short filaOrigen;
+    unsigned short  colOrigen;
+    unsigned short  filaDestino;
+    unsigned short  colDestino;
+    unsigned short  fichaComida;
+};
+inline vector<unsigned char> creaMensajeDeTurno(uint32_t numeroTurno,const vector<Movimiento>& movs)
+{
+    vector<unsigned char> mensaje;
+    mensaje.insert(mensaje.end(),begin(FIRMA_DEL_PROTOCOLO),end(FIRMA_DEL_PROTOCOLO));
+    mensaje.push_back(TURNO);//mensajeDeTurno
+    numeroTurno=htonl(numeroTurno);
+    mensaje.push_back(numeroTurno&(0xff));
+    mensaje.push_back((numeroTurno>>8)&(0xff));
+    mensaje.push_back((numeroTurno>>16)&(0xff));
+    mensaje.push_back((numeroTurno>>24)&(0xff));//numero de turno
+    uint16_t nTurnos;
+    nTurnos=htons(movs.size());
+    mensaje.push_back(nTurnos&(0xff));
+    mensaje.push_back((nTurnos>>8)&(0xff));//cantidadDeTurnos
+    char mensajeDeTurno[3]={};
+    for(auto mov:movs)
+    {
+        fijaMensajeDeMovimiento(mensajeDeTurno,mov.filaOrigen,mov.colOrigen,
+                                mov.filaDestino,mov.colDestino,mov.fichaComida);
+        mensaje.insert(mensaje.end(),begin(mensajeDeTurno),end(mensajeDeTurno));
+    }
+    return mensaje;
 }
 
 inline int fijaMensajeDeMovimiento(char* mensaje,unsigned short filaOrig,unsigned short columnaOrig,
