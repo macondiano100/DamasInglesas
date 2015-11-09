@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     progresoConnecion->setFixedSize(width()/2,progresoConnecion->height());
     connect(ui->action_nueva_partida,SIGNAL(triggered()),this,SLOT(iniciarPartida()));
     connect(progresoConnecion,&QProgressDialog::canceled,&MessagesSender::cancelarInicioPartida);
+    connect(&futureWatcher,SIGNAL(finished()),progresoConnecion,SLOT(cancel()));
 }
 void MainWindow::unirseAPartida()
 {

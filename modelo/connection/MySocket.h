@@ -30,8 +30,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-constexpr socklen_t TAMANIO_SOCKET_4=sizeof(sockaddr_in);
-constexpr socklen_t TAMANIO_SOCKET_6=sizeof(sockaddr_in6);
+static socklen_t TAMANIO_SOCKET_4=sizeof(sockaddr_in);
+static socklen_t TAMANIO_SOCKET_6=sizeof(sockaddr_in6);
 #define BUF_SIZE 500
 #define TAMANIO_PUERTO 64
 
@@ -61,9 +61,12 @@ private:
     }
 
 public:
-    MySocket(string port):MySocket(stoi(port)){
+    MySocket(string port):MySocket(toInt(port)){
     }
-    MySocket(int port)throw (SocketException):sock4(nullptr),sock6(nullptr),res(nullptr),resSave(nullptr){
+    MySocket(int port)throw (SocketException){
+        res=NULL;
+        sock6=nullptr;
+        sock4=nullptr;
         struct addrinfo hints;
        struct addrinfo *result, *rp;
        int s;
@@ -75,7 +78,7 @@ public:
        hints.ai_canonname = NULL;
        hints.ai_addr = NULL;
        hints.ai_next = NULL;
-       s = getaddrinfo(NULL, to_string(port).c_str(), &hints, &result);
+       s = getaddrinfo(NULL, toStr(port).c_str(), &hints, &result);
        if (s != 0) {
             throw SocketException(gai_strerror(s));
        }
@@ -84,6 +87,9 @@ public:
                    rp->ai_protocol);
            if (desc == -1)
                continue;
+            int yes=1;
+            if (setsockopt(desc, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
+            break;
            if (::bind(desc, rp->ai_addr, rp->ai_addrlen) == 0)
                break;                  /* Success */
            ::close(desc);
@@ -93,7 +99,7 @@ public:
        }
        freeaddrinfo(result);           /* No longer needed */
     }
-    MySocket(string port,string host)throw (SocketException):sock4(nullptr),sock6(nullptr),res(nullptr),resSave(nullptr){
+    MySocket(string port,string host)throw (SocketException){
         addrinfo hints;
         int n;
         bool seEncontroHost=false;
@@ -129,7 +135,7 @@ public:
             throw ConnectSocketException("No se pudo conectar al host");
         }
     }
-    MySocket(int port,string host) throw (SocketException):MySocket(to_string(port),host){
+    MySocket(int port,string host) throw (SocketException):MySocket(toStr(port),host){
 
     }
     ~MySocket(){
@@ -143,6 +149,7 @@ public:
         else if(sock4!=nullptr){
             delete sock4;
         }
+        close();
     }
     void close()throw (SocketException){
         int x=::close(desc);

@@ -224,7 +224,24 @@
  <resources>
   <include location="res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionUnirse_A_Partida</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>unirseAPartida()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>262</x>
+     <y>242</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>unirseAPartida()</slot>
  </slots>

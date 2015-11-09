@@ -17,10 +17,17 @@ void MessagesSender::inicializa_tablero()
 
 void MessagesSender::cancelarInicioPartida()
 {
+    QMutex mutex;
+    mutex.lock();
     esperarConecciones=false;
+    mutex.unlock();
 }
 
 void MessagesSender::unirse_a_partida(string host){
+    Jugador *jug1,*jug2;
+    jug1=new Jugador();
+    jug2=new Jugador();
+    jug2->setNombre("Diego Olvera");
     int i,j,l;
     char message[BUFFER+1];
     char mensaje_a_enviar[BUFFER+1];
@@ -28,10 +35,6 @@ void MessagesSender::unirse_a_partida(string host){
     unsigned short bandera;
     char versionDelProtocolo;
     char nombreDelJugador[TAMANIO_NOMBRE_JUGADOR+1];
-    Jugador *jug1,*jug2;
-    jug1=new Jugador();
-    jug2=new Jugador();
-    jug2->setNombre("Diego Olvera");
     string miNombreStr=jug2->getNombre();
     memcpy(mensaje_a_enviar,FIRMA_DEL_PROTOCOLO,2);
     for(i=2,l=0,j=miNombreStr.size();l<j;i++){
@@ -77,14 +80,13 @@ void MessagesSender::unirse_a_partida(string host){
 
 
 void MessagesSender::iniciarPartida(){
-
+    MySocket* socketServidor;
+    MySocket* socketCliente;
     Jugador *jug1,*jug2;
-    if(socketServidor)
-    {
-        cout<<"endl"<<endl;
-        socketServidor->close();
-        delete socketServidor;
-    }
+    QMutex mutex;
+    jug1=new Jugador();
+    jug2=new Jugador();
+    jug1->setNombre("Jose Vidal");
     socketServidor=new MySocket(PUERTO);
     socketServidor->setFlags(O_NONBLOCK);
     socketServidor->listen(1);
@@ -96,16 +98,17 @@ void MessagesSender::iniciarPartida(){
     char mensajeRecibido[BUFFER+1];
     int tamanioNombreJugador;
     cout<<"Esperando jugador..."<<endl;
-    int a=0;
+    mutex.lock();
     esperarConecciones=true;
+    mutex.unlock();
     while( (socketCliente=socketServidor->accept())==nullptr )
     {
-        if(esperarConecciones)cout<<a++<<endl;
-        else return;
+        if(!esperarConecciones){
+            cout<<"Canceled"<<endl;
+            delete socketServidor;
+            return;
+        }
     }
-    jug1=new Jugador();
-    jug2=new Jugador();
-    jug1->setNombre("Jose Vidal");
     mensaje[0]=FIRMA_DEL_PROTOCOLO[0];
     mensaje[1]=FIRMA_DEL_PROTOCOLO[1];
     mensaje[2]=INICIO_PARTIDA;
@@ -133,9 +136,10 @@ void MessagesSender::iniciarPartida(){
         jug2->setHost(socketCliente->getIp());
         cout<<"IP:"<< jug2->getHost()<<endl;
         jug2->setNombre(string(nombreDelJugador));
-        inicializa_tablero();
-        tablero.setPrimerJugador(jug1);
-        tablero.setSegundoJugador(jug2);
+        mutex.lock();
+        MessagesSender::socketCliente=socketCliente;
+        MessagesSender::socketServidor=socketServidor;
+        mutex.unlock();
     }catch(SocketWriteException& ex){
         cout<<ex.getMessage()<<endl;
     }

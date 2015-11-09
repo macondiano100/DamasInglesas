@@ -14,7 +14,8 @@ class DialogoConeccion : public QDialog
 public:
     explicit DialogoConeccion(QWidget *parent = 0);
     ~DialogoConeccion();
-
+public slots:
+void unirse_a_partida();
 private:
     Ui::DialogoConeccion *ui;
 };

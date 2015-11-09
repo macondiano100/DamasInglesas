@@ -5,8 +5,6 @@
 using namespace std;
 
 void esperar(unsigned long long milisegundos);
-string toStr(double x);
-int toInt(string s);
 
 #ifdef _WIN32
     #include <windows.h>
@@ -18,17 +16,17 @@ int toInt(string s);
     inline void esperar(unsigned long long milisegundos){
         usleep(milisegundos*1000);
     }
+    inline string toStr(double x){
+        stringstream str;
+        str<<x;
+        return str.str();
+    }
+    inline int toInt(string s){
+        int x;
+        stringstream str;
+        str<<s;
+        str>>x;
+        return x;
+    }
 #endif
-inline string toStr(double x){
-    stringstream str;
-    str<<x;
-    return str.str();
-}
-inline int toInt(string s){
-    int x;
-    stringstream str;
-    str<<s;
-    str>>x;
-    return x;
-}
 #endif // UTILIDADESVARIADAS_H_INCLUDED

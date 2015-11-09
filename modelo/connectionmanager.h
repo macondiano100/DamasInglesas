@@ -2,13 +2,13 @@
 #define CONNECTIONMANAGER_H
 
 #include <QObject>
+#include <QMutex>
 #include "modelo/Tablero.h"
 #include "modelo/Ficha.h"
 #include "modelo/connection/MySocket.h"
 #include "modelo/connection/ConstantesEstadoDelJuego.h"
 #include "modelo/connection/NoSuchMessageExpectedException.h"
 #include "modelo/connection/utilidades.h"
-#include "modelo/connection/ConstantesEstadoDelJuego.h"
 extern Tablero tablero;
 class MessagesSender {
     static bool esperarConecciones;
@@ -24,4 +24,8 @@ public:
     static void unirse_a_partida(string host);
 
 };
+
+
+
+
 #endif // CONNECTIONMANAGER_H
