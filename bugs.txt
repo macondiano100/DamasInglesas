@@ -1,0 +1,2 @@
+bugs
+siguemoviendo y ficha comida se usan igual (no lo son). Implementar como saber si se comio una ficha
