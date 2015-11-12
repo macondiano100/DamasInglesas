@@ -65,11 +65,16 @@ struct Movimiento
     unsigned short  colOrigen;
     unsigned short  filaDestino;
     unsigned short  colDestino;
-    unsigned short  fichaComida;
+    bool  fichaComida;
+    Movimiento(unsigned short filaOrigen,unsigned short colOrigen,unsigned short filaDestino,
+               unsigned short colDestino,bool fichaComida):
+        filaOrigen(filaOrigen),colOrigen(colOrigen),filaDestino(filaDestino),colDestino(colDestino),
+    fichaComida(fichaComida){}
+    Movimiento():Movimiento(0,0,0,0,false){;}
 };
-inline vector<unsigned char> creaMensajeDeTurno(uint32_t numeroTurno,const vector<Movimiento>& movs)
+inline vector<char> creaMensajeDeTurno(uint32_t numeroTurno,const vector<Movimiento>& movs)
 {
-    vector<unsigned char> mensaje;
+    vector<char> mensaje;
     mensaje.insert(mensaje.end(),begin(FIRMA_DEL_PROTOCOLO),end(FIRMA_DEL_PROTOCOLO));
     mensaje.push_back(TURNO);//mensajeDeTurno
     numeroTurno=htonl(numeroTurno);
@@ -103,6 +108,26 @@ inline int fijaMensajeDeMovimiento(char* mensaje,unsigned short filaOrig,unsigne
     msn=(unsigned int)bits.to_ulong();
     memcpy(mensaje,&msn,3);
     return 10;
+}
+inline vector<Movimiento> getMovementsFromMessage(char* mensaje)
+{
+        int numeroDeTurno;
+        unsigned short nMovimientos,i;
+        vector<Movimiento> movimientos;
+        Movimiento movimiento;
+        memcpy(&numeroDeTurno,&mensaje[3],4);
+        numeroDeTurno=ntohl(numeroDeTurno);
+        cout<<"Numero de turno:"<<numeroDeTurno<<endl;
+        memcpy(&nMovimientos,&mensaje[TAMANIO_FIRMA_DEL_PROTOCOLO+5],2);
+        nMovimientos=ntohs(nMovimientos);
+        cout<<"Movimientos:" << nMovimientos<<endl;
+        for(i=0;i<nMovimientos;i++){
+            cout<<"Movimiento #"<< (i+1)<<endl;
+            fijaCoordenadas(&mensaje[(9+i*3)],movimiento.filaOrigen,movimiento.colOrigen,
+                    movimiento.filaDestino,movimiento.colDestino,movimiento.fichaComida);
+            movimientos.push_back(movimiento);
+        }
+        return movimientos;
 }
 
 #endif // UTILIDADES_H_INCLUDED
