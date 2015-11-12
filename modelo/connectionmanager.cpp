@@ -4,6 +4,9 @@ bool MessagesSender::esperarConecciones;
 MySocket* MessagesSender::socketServidor=nullptr;
 MySocket* MessagesSender::socketCliente=nullptr;
 #include <QMutex>
+template<typename T, std::size_t N>
+constexpr std::size_t size(T(&)[N]) { return N; } //tamaño de arreglo
+constexpr int MAX_DATAGRAM_SIZE=1055;
 void MessagesSender::inicializa_tablero()
 {
     Jugador *jug1,*jug2;
@@ -22,6 +25,39 @@ void MessagesSender::cancelarInicioPartida()
     esperarConecciones=false;
     mutex.unlock();
 }
+void MessagesSender::enviarInformacionDeTurno(int nTurno, vector<Movimiento> &movements,bool partidaGanada)
+{
+    vector<char> message=creaMensajeDeTurno(nTurno,movements);
+    if(socketCliente!=nullptr)
+    {
+        socketCliente->write(message.data(),message.size());
+    }
+    else
+    {
+        for(auto c:message) cout<<(int)c<<endl;
+    }
+}
+void MessagesSender::esperarTurnoOponente(uint32_t &nTurno, vector<Movimiento> &movements, uint8_t &banderas)
+{
+    char buffer[MAX_DATAGRAM_SIZE];
+    if(socketCliente!=nullptr)
+    {
+        while(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)<=0)
+        {
+            //TODO keepAlive!!;
+        }
+        memcpy(&banderas,&buffer[2],1);
+        memcpy(&nTurno,&buffer[3],4);
+        movements=getMovementsFromMessage(buffer);
+        cout<<movements.size()<<endl;
+        cout<<"Finished?"<<endl;
+    }
+    else
+    {
+        sleep(1);
+    }
+}
+
 
 void MessagesSender::unirse_a_partida(string host){
     Jugador *jug1,*jug2;
@@ -135,6 +171,7 @@ void MessagesSender::iniciarPartida(){
         }
         jug2->setHost(socketCliente->getIp());
         cout<<"IP:"<< jug2->getHost()<<endl;
+        cout<<"Puerto:"<<socketCliente->getPort()<<endl;
         jug2->setNombre(string(nombreDelJugador));
         mutex.lock();
         MessagesSender::socketCliente=socketCliente;

@@ -13,13 +13,14 @@ extern Tablero tablero;
 class MessagesSender {
     static bool esperarConecciones;
     static constexpr int BUFFER=461;
-    static MySocket* socketServidor;
-    static MySocket* socketCliente;
+    static  MySocket* socketServidor;
+    static  MySocket* socketCliente;
     static void inicializa_tablero();
 
 public:
     static void cancelarInicioPartida();
-
+    static void enviarInformacionDeTurno(int nTurno,vector<Movimiento> &movements,bool partidaGanada);
+    static void esperarTurnoOponente(uint32_t &nTurno, vector<Movimiento> &movements, uint8_t &banderas);
     static void iniciarPartida();
     static void unirse_a_partida(string host);
 
