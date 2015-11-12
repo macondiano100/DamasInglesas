@@ -5,6 +5,11 @@
 #include<array>
 #include<QGridLayout>
 #include<QVariant>
+#include<vector>
+#include<QProgressDialog>
+#include<QFutureWatcher>
+#include<QFuture>
+#include "modelo/connection/utilidades.h"
 #include "visualboardsquare.h"
 using std::array;
 extern Tablero tablero;
@@ -15,21 +20,28 @@ private:
     enum Estado
     {
         WAITING_SOURCE,
-        WAITING_DESTINY
+        WAITING_DESTINY,
+        WAITING_OPONENT
     };
     Estado estadoActual;
     static constexpr int BOARD_SIZE=8;
     array<array<VisualBoardSquare*,BOARD_SIZE>,BOARD_SIZE> squares;
     QGridLayout* gridLayout;
-    VisualBoardSquare* sourceSquare;
     void turnOffSquares();
+    QProgressDialog* progressDialogWaitingOponent;
+
+    QFutureWatcher<void> futureWatcher;
+    VisualBoardSquare* sourceSquare;
     bool forcedMove;
+    vector<Movimiento> lastMovements;
 private slots:
     void manejarMovimiento();
 public:
     explicit VisualBoard(QWidget *parent = 0,int inverted=false);
+    void waitAndProcessOponentMoves();
     void invertirTablero();
     void highLightSquares();
+    ResultadoDeMovimiento doMovements(vector<Movimiento> movimientos);
     ~VisualBoard();
 
 signals:

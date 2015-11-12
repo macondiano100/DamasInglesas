@@ -26,6 +26,7 @@ void MainWindow::iniciarPartida()
     progresoConnecion->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     progresoConnecion->exec();
     futureWatcher.waitForFinished();
+    this->ui->visualBoard->waitAndProcessOponentMoves();
 }
 MainWindow::~MainWindow()
 {

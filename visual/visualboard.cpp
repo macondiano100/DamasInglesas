@@ -1,6 +1,10 @@
 #include "visualboard.h"
+#include "modelo/connection/utilidadesVariadas.h"
+#include "modelo/connectionmanager.h"
+#include "visual/mainwindow.h"
 #include <QFile>
 #include <QTextStream>
+#include <QtConcurrent>
 #include <QString>
 #include <iostream>
 VisualBoard::VisualBoard(QWidget *parent, int inverted) : QWidget(parent),forcedMove(false)
@@ -24,6 +28,11 @@ VisualBoard::VisualBoard(QWidget *parent, int inverted) : QWidget(parent),forced
                                               BOARD_SIZE-columna-1);
             else gridLayout->addWidget(square,fila,columna);
         }
+    progressDialogWaitingOponent=new QProgressDialog(tr("Esperando oponente"),"",0,0,this);
+    progressDialogWaitingOponent->setCancelButton(nullptr);
+    progressDialogWaitingOponent->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
+    connect(&futureWatcher,SIGNAL(finished()),progressDialogWaitingOponent,SLOT(cancel()));
+    connect(&futureWatcher,&QFutureWatcher<void>::finished,progressDialogWaitingOponent,[](){cout<<"lambda"<<endl;});
     QFile stylesheet(":style/buttonStyle.css");
     stylesheet.open(QIODevice::ReadOnly);
     QTextStream ts(&stylesheet);
@@ -31,6 +40,7 @@ VisualBoard::VisualBoard(QWidget *parent, int inverted) : QWidget(parent),forced
 }
 void VisualBoard::manejarMovimiento()
 {
+    bool validMovement;
     switch(estadoActual)
     {
     case WAITING_SOURCE:
@@ -42,7 +52,9 @@ void VisualBoard::manejarMovimiento()
         }
         break;
     case WAITING_DESTINY:
+    {
         VisualBoardSquare *destinySquare=qobject_cast<VisualBoardSquare *>(sender());
+        VisualBoardSquare *aux;
         if(forcedMove&&!tablero.
                 esMovimientoConSalto(sourceSquare->fila,sourceSquare->columna,
                                      destinySquare->fila,destinySquare->columna))
@@ -51,37 +63,56 @@ void VisualBoard::manejarMovimiento()
             estadoActual=WAITING_DESTINY;
         }
         else{
+            aux=sourceSquare;
             ResultadoDeMovimiento res=tablero.moverFicha(
                         sourceSquare->fila,sourceSquare->columna,
                         destinySquare->fila,destinySquare->columna
                         );
             switch(res)
             {
-            case ADQUIERE_DOBLE_MOVIMIENTO_LA_FICHA:
-            case TURNO_FINALIZADO:
-                estadoActual=WAITING_SOURCE;
-                turnOffSquares();
-                forcedMove=false;
-                break;
             case MOVIMIENTO_INVALIDO:
             case POSICION_OCUPADA:
                 if(!forcedMove)
                 {
                     estadoActual=WAITING_SOURCE;
                     turnOffSquares();
+                    validMovement=false;
                 }
+                break;
+            case ADQUIERE_DOBLE_MOVIMIENTO_LA_FICHA:
+            case TURNO_FINALIZADO:
+                turnOffSquares();
+                forcedMove=false;
+                validMovement=true;
+                estadoActual=WAITING_OPONENT;
                 break;
             case DOBLE_MOV_Y_SIGUE_JUGANDO:
             case SIGUE_MOVIENDO:
                 turnOffSquares();
-                sourceSquare=squares[destinySquare->fila][destinySquare->columna];
+                sourceSquare=destinySquare;
                 forcedMove=true;
                 highLightSquares();
+                validMovement=true;
                 break;
+            }
+            if(validMovement)
+            {
+                bool sigueMoviendo=(res==DOBLE_MOV_Y_SIGUE_JUGANDO||res==SIGUE_MOVIENDO);
+                lastMovements.
+                        emplace_back(aux->fila,aux->columna,
+                                     destinySquare->fila,destinySquare->columna,
+                                     sigueMoviendo);
+                if(!sigueMoviendo)
+                {
+                    MessagesSender::enviarInformacionDeTurno(0,lastMovements,false);
+                    lastMovements.clear();
+                    waitAndProcessOponentMoves();
+                }
             }
 
         }
-        break;
+    }
+    case WAITING_OPONENT:break;
     }
 }
 
@@ -117,7 +148,7 @@ void VisualBoard::highLightSquares()
             for(auto square:fila)
             {
                 if(tablero.esMovimientoConSalto(sourceSquare->fila,sourceSquare->columna,
-                                              square->fila,square->columna))
+                                                square->fila,square->columna))
                 {
                     square->setHighlight(true);
                 }
@@ -137,6 +168,22 @@ void VisualBoard::highLightSquares()
     }
 
 }
+ResultadoDeMovimiento VisualBoard::doMovements(vector<Movimiento> movimientos)
+{
+    ResultadoDeMovimiento res=SIGUE_MOVIENDO;
+    for(Movimiento mov:movimientos)
+    {
+        if(res!=SIGUE_MOVIENDO&&res!=DOBLE_MOV_Y_SIGUE_JUGANDO) break;
+        if(!tablero.esMovimientoValido(mov.filaOrigen,mov.colOrigen,mov.filaDestino,mov.colDestino))
+            break;
+        res=tablero.moverFicha(mov.filaOrigen,mov.colOrigen,mov.filaDestino,mov.colDestino);
+        if((res==SIGUE_MOVIENDO||res==DOBLE_MOV_Y_SIGUE_JUGANDO)!=mov.fichaComida)break;
+        repaint();
+        esperar(700);
+    }
+    return res;
+}
+
 void VisualBoard::turnOffSquares()
 {
     for(auto fila:squares)
@@ -145,6 +192,25 @@ void VisualBoard::turnOffSquares()
             square->setHighlight(false);
         }
 }
+void VisualBoard::waitAndProcessOponentMoves()
+{
+    uint32_t nTurnoRecibido;
+    uint8_t banderasRecibidas;
+    ResultadoDeMovimiento resultadoOponente;
+    auto llamada=bind
+            (&MessagesSender::esperarTurnoOponente,
+             ref(nTurnoRecibido),
+             ref(lastMovements),
+             ref(banderasRecibidas));
+    QFuture<void> future=QtConcurrent::run(&llamada);
+    futureWatcher.setFuture(future);
+    progressDialogWaitingOponent->exec();
+    futureWatcher.waitForFinished();
+    ResultadoDeMovimiento res=doMovements(lastMovements);
+    lastMovements.clear();
+    estadoActual=WAITING_SOURCE;
+}
+
 VisualBoard::~VisualBoard()
 {
     for(auto fila:squares)
@@ -152,5 +218,6 @@ VisualBoard::~VisualBoard()
         {
             delete square;
         }
+    delete progressDialogWaitingOponent;
 }
 

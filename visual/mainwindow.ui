@@ -26,7 +26,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout">
     <item>
-     <widget class="VisualBoard" name="widget" native="true"/>
+     <widget class="VisualBoard" name="visualBoard" native="true"/>
     </item>
     <item alignment="Qt::AlignRight">
      <widget class="QWidget" name="widget_2" native="true">
