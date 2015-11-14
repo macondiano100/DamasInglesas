@@ -35,12 +35,14 @@ private:
     bool forcedMove;
     vector<Movimiento> lastMovements;
 private slots:
-    void manejarMovimiento();
+    void casillaClicked();
 public:
     explicit VisualBoard(QWidget *parent = 0,int inverted=false);
-    void waitAndProcessOponentMoves();
+    bool waitAndProcessOponentMoves(u_int8_t &banderasRespuesta);
+    bool waitAndProcessAnswer(bool partidaGanada);
     void invertirTablero();
     void highLightSquares();
+    void processMovement();
     ResultadoDeMovimiento doMovements(vector<Movimiento> movimientos);
     ~VisualBoard();
 

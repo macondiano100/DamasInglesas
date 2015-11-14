@@ -27,7 +27,7 @@ void MessagesSender::cancelarInicioPartida()
 }
 void MessagesSender::enviarInformacionDeTurno(int nTurno, vector<Movimiento> &movements,bool partidaGanada)
 {
-    vector<char> message=creaMensajeDeTurno(nTurno,movements);
+    vector<char> message=creaMensajeDeTurno(nTurno,movements,partidaGanada);
     if(socketCliente!=nullptr)
     {
         socketCliente->write(message.data(),message.size());
@@ -39,18 +39,50 @@ void MessagesSender::enviarInformacionDeTurno(int nTurno, vector<Movimiento> &mo
 }
 void MessagesSender::esperarTurnoOponente(uint32_t &nTurno, vector<Movimiento> &movements, uint8_t &banderas)
 {
-    char buffer[MAX_DATAGRAM_SIZE];
+    char buffer[MAX_DATAGRAM_SIZE]={};
     if(socketCliente!=nullptr)
     {
-        while(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)<=0)
+        while(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)<=0&&strncmp(buffer,FIRMA_DEL_PROTOCOLO,2))
         {
             //TODO keepAlive!!;
         }
         memcpy(&banderas,&buffer[2],1);
         memcpy(&nTurno,&buffer[3],4);
+        nTurno=ntohl(nTurno);
         movements=getMovementsFromMessage(buffer);
-        cout<<movements.size()<<endl;
-        cout<<"Finished?"<<endl;
+    }
+    else
+    {
+        sleep(1);
+    }
+}
+
+void MessagesSender::enviarRespuestaDeTurno(u_int8_t banderas, int numeroTurno)
+{
+    vector<char> message=creaMensajeDeRespuestaDeTurno(banderas,numeroTurno);
+    if(socketCliente!=nullptr)
+    {
+        socketCliente->write(message.data(),message.size());
+    }
+    else
+    {
+        for(auto c:message) cout<<(int)c<<endl;
+    }
+}
+
+void MessagesSender::esperaRespuestaDeTurno(u_int8_t &banderas, u_int32_t &numeroTurno)
+{
+    char buffer[MAX_DATAGRAM_SIZE]={};
+    if(socketCliente!=nullptr)
+    {
+        while(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)
+              <=0&&strncmp(buffer,FIRMA_DEL_PROTOCOLO,2))
+        {
+            //TODO keepAlive!!;
+        }
+        memcpy(&banderas,&buffer[2],1);
+        memcpy(&numeroTurno,&buffer[3],4);
+        numeroTurno=ntohl(numeroTurno);
     }
     else
     {
@@ -88,7 +120,7 @@ void MessagesSender::unirse_a_partida(string host){
             firmaDelProtocolo[TAMANIO_FIRMA_DEL_PROTOCOLO]='\0';
             bandera=message[2];
             //bandera=ntohs(bandera);
-            if(bandera!=INICIO_PARTIDA || strcmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO)!=0){
+            if(bandera!=INICIO_PARTIDA || strncmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO,2)!=0){
                 cout<<"No se recibio la bandera adecuada"<<endl;
                 socketCliente->shutdown();
                 socketCliente->close();
@@ -105,6 +137,8 @@ void MessagesSender::unirse_a_partida(string host){
             jug1->setHost(socketCliente->getIp());
             cout<<"IP:"<< jug1->getHost()<<endl;
             jug1->setNombre(string(nombreDelJugador));
+            tablero.setPrimerJugador(jug1);
+            tablero.setSegundoJugador(jug2);
 
         }catch(SocketReadException& exRead){
             cout<<exRead.getMessage();
@@ -163,7 +197,7 @@ void MessagesSender::iniciarPartida(){
         nombreDelJugador[tamanioNombreJugador]='\0';
         cout<<"Firma del protocolo:"<<firmaDelProtocolo<<endl;
         cout<<"Nombre del jugador 2:"<<nombreDelJugador<<endl;
-        if(strcmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO)!=0){
+        if(strncmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO,2)!=0){
             cout<<"No se recibio la bandera adecuada"<<endl;
             socketCliente->shutdown();
             socketCliente->close();
@@ -174,6 +208,8 @@ void MessagesSender::iniciarPartida(){
         cout<<"Puerto:"<<socketCliente->getPort()<<endl;
         jug2->setNombre(string(nombreDelJugador));
         mutex.lock();
+        tablero.setPrimerJugador(jug1);
+        tablero.setSegundoJugador(jug2);
         MessagesSender::socketCliente=socketCliente;
         MessagesSender::socketServidor=socketServidor;
         mutex.unlock();

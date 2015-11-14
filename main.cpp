@@ -5,8 +5,6 @@ Tablero tablero;
 
 int main(int argc, char *argv[])
 {
-    tablero.setPrimerJugador(new Jugador());
-    tablero.setSegundoJugador(new Jugador());
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

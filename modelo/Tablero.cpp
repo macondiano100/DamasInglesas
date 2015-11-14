@@ -6,7 +6,9 @@ Jugador *Tablero::getPrimerJugador(){
 }
 
 void Tablero::setPrimerJugador(Jugador *j){
+    if(getPrimerJugador())delete primerJugador;
     primerJugador=j;
+    if(getPrimerJugador())getPrimerJugador()->setFichasActuales(piezasPorJugador);
 }
 
 Jugador *Tablero::getSegundoJugador(){
@@ -15,7 +17,9 @@ Jugador *Tablero::getSegundoJugador(){
 
 
 void Tablero::setSegundoJugador(Jugador *j){
+    if(getSegundoJugador())delete segundoJugador;
     segundoJugador=j;
+    if(getSegundoJugador())getSegundoJugador()->setFichasActuales(piezasPorJugador);
 }
 
 bool Tablero::agregarFicha(short fila, short columna, short color){
@@ -94,7 +98,10 @@ ResultadoDeMovimiento Tablero::moverFicha(short filaOrig, short columnaOrig, sho
                                  DOBLE_MOV_Y_SIGUE_JUGANDO:
                                  ADQUIERE_DOBLE_MOVIMIENTO_LA_FICHA);
                     }
-
+                    cout<<"Piezas 1"<<primerJugador->getFichasActuales()<<endl;
+                    cout<<"Piezas 2"<<segundoJugador->getFichasActuales()<<endl;
+                    if(primerJugador->getFichasActuales()==0||segundoJugador->getFichasActuales()==0)
+                        res=SE_HA_GANADO_LA_PARTIDA;
                 }
             }
             else{
@@ -130,7 +137,7 @@ bool Tablero::esCasillaDentroDelRango(short fila, short columna){
 bool Tablero::otorgarFicha(short fila, short columna){
     Ficha *ficha=consultar(fila,columna);
     if(ficha!=nullptr){
-        (ficha->getColor()?getPrimerJugador():getSegundoJugador())->decrementaFichasActuales();
+        (ficha->getColor()==COLOR_ROJO?getPrimerJugador():getSegundoJugador())->decrementaFichasActuales();
         fichas[fila][columna]=nullptr;
         delete ficha;
         return true;
@@ -160,7 +167,7 @@ Tablero::Tablero(short tamanio, Jugador *primerJugador, Jugador *segundoJugador)
     setPrimerJugador(primerJugador);
     setSegundoJugador(segundoJugador);
     setTamanio(tamanio);
-    setPiezasPorJugador(piezasPorJugador=tamanio+4);
+    setPiezasPorJugador(piezasPorJugador=12);
     if(primerJugador!=nullptr && segundoJugador!=nullptr){
         getPrimerJugador()->setFichasActuales(piezasPorJugador);
         getSegundoJugador()->setFichasActuales(piezasPorJugador);

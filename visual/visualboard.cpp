@@ -7,6 +7,7 @@
 #include <QtConcurrent>
 #include <QString>
 #include <iostream>
+constexpr int NTURNO=0;
 VisualBoard::VisualBoard(QWidget *parent, int inverted) : QWidget(parent),forcedMove(false)
 {
     gridLayout=new QGridLayout(this);
@@ -22,7 +23,7 @@ VisualBoard::VisualBoard(QWidget *parent, int inverted) : QWidget(parent),forced
                         color="red":color="black";
             square->setProperty("color",color);
             connect(square,SIGNAL(clicked()),
-                    SLOT(manejarMovimiento()));
+                    SLOT(casillaClicked()));
             if(inverted)gridLayout->addWidget(square,
                                               BOARD_SIZE-fila-1,
                                               BOARD_SIZE-columna-1);
@@ -32,13 +33,16 @@ VisualBoard::VisualBoard(QWidget *parent, int inverted) : QWidget(parent),forced
     progressDialogWaitingOponent->setCancelButton(nullptr);
     progressDialogWaitingOponent->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     connect(&futureWatcher,SIGNAL(finished()),progressDialogWaitingOponent,SLOT(cancel()));
-    connect(&futureWatcher,&QFutureWatcher<void>::finished,progressDialogWaitingOponent,[](){cout<<"lambda"<<endl;});
     QFile stylesheet(":style/buttonStyle.css");
     stylesheet.open(QIODevice::ReadOnly);
     QTextStream ts(&stylesheet);
     setStyleSheet(ts.readAll());
 }
-void VisualBoard::manejarMovimiento()
+void seGanoLaPartida(){
+    cout<<"Partida Ganada"<<endl;
+}
+void cierreForsozo(){;}
+void VisualBoard::casillaClicked()
 {
     bool validMovement;
     switch(estadoActual)
@@ -79,6 +83,7 @@ void VisualBoard::manejarMovimiento()
                     validMovement=false;
                 }
                 break;
+            case SE_HA_GANADO_LA_PARTIDA:
             case ADQUIERE_DOBLE_MOVIMIENTO_LA_FICHA:
             case TURNO_FINALIZADO:
                 turnOffSquares();
@@ -102,11 +107,38 @@ void VisualBoard::manejarMovimiento()
                         emplace_back(aux->fila,aux->columna,
                                      destinySquare->fila,destinySquare->columna,
                                      sigueMoviendo);
+                repaint();
                 if(!sigueMoviendo)
                 {
-                    MessagesSender::enviarInformacionDeTurno(0,lastMovements,false);
+                    bool ok,partidaGanada=res==SE_HA_GANADO_LA_PARTIDA;
+                    MessagesSender::enviarInformacionDeTurno(NTURNO,lastMovements,partidaGanada);
                     lastMovements.clear();
-                    waitAndProcessOponentMoves();
+                    ok=waitAndProcessAnswer(partidaGanada);
+                    if(!ok)
+                    {
+                        cierreForsozo();
+                        return;
+                    }
+                    else if(partidaGanada)
+                    {
+                        seGanoLaPartida();
+                        return;
+                    }
+                    u_int8_t banderasAenviar;
+                    ok=waitAndProcessOponentMoves(banderasAenviar);
+                    partidaGanada=(banderasAenviar&PARTIDA_GANADA);
+                    if(!ok)
+                    {
+                        cierreForsozo();
+                        return;
+                    }
+                    MessagesSender::enviarRespuestaDeTurno(banderasAenviar,NTURNO);
+                    if(partidaGanada)
+                    {
+                        seGanoLaPartida();
+                        return;
+                    }
+                    estadoActual=WAITING_SOURCE;
                 }
             }
 
@@ -166,7 +198,12 @@ void VisualBoard::highLightSquares()
                 }
             }
     }
+    
+}
 
+void VisualBoard::processMovement()
+{
+    
 }
 ResultadoDeMovimiento VisualBoard::doMovements(vector<Movimiento> movimientos)
 {
@@ -179,7 +216,7 @@ ResultadoDeMovimiento VisualBoard::doMovements(vector<Movimiento> movimientos)
         res=tablero.moverFicha(mov.filaOrigen,mov.colOrigen,mov.filaDestino,mov.colDestino);
         if((res==SIGUE_MOVIENDO||res==DOBLE_MOV_Y_SIGUE_JUGANDO)!=mov.fichaComida)break;
         repaint();
-        esperar(700);
+        esperar(300);
     }
     return res;
 }
@@ -192,11 +229,10 @@ void VisualBoard::turnOffSquares()
             square->setHighlight(false);
         }
 }
-void VisualBoard::waitAndProcessOponentMoves()
+bool VisualBoard::waitAndProcessOponentMoves(u_int8_t &banderasRespuesta)
 {
     uint32_t nTurnoRecibido;
-    uint8_t banderasRecibidas;
-    ResultadoDeMovimiento resultadoOponente;
+    u_int8_t banderasRecibidas;
     auto llamada=bind
             (&MessagesSender::esperarTurnoOponente,
              ref(nTurnoRecibido),
@@ -206,9 +242,68 @@ void VisualBoard::waitAndProcessOponentMoves()
     futureWatcher.setFuture(future);
     progressDialogWaitingOponent->exec();
     futureWatcher.waitForFinished();
-    ResultadoDeMovimiento res=doMovements(lastMovements);
+    if(nTurnoRecibido!=NTURNO)
+    {
+      cierreForsozo();
+      return false;
+    }
+    ResultadoDeMovimiento resultadoOponente=doMovements(lastMovements);
+    banderasRespuesta=RESPUESTA_DE_TURNO;
+    switch (resultadoOponente) {
+        case TURNO_FINALIZADO:
+            if(banderasRecibidas&PARTIDA_GANADA) banderasRespuesta
+                    =banderasRespuesta|CIERRE_FORZOSO;
+            break;
+        case ADQUIERE_DOBLE_MOVIMIENTO_LA_FICHA:
+        break;
+        case MOVIMIENTO_INVALIDO:
+        case SIGUE_MOVIENDO:
+        case POSICION_OCUPADA:
+        case NO_HAY_FICHA_QUE_MOVER:
+        case DOBLE_MOV_Y_SIGUE_JUGANDO:
+            banderasRespuesta=banderasRespuesta|CIERRE_FORZOSO;
+        break;
+        case SE_HA_GANADO_LA_PARTIDA:
+             if(banderasRecibidas&PARTIDA_GANADA)
+             {
+                banderasRespuesta=banderasRecibidas|PARTIDA_GANADA;
+             }
+             else
+                banderasRespuesta=banderasRespuesta|CIERRE_FORZOSO;
+        break;
+
+    }
     lastMovements.clear();
-    estadoActual=WAITING_SOURCE;
+    if(banderasRespuesta&CIERRE_FORZOSO)
+    {
+       return false;
+    }
+    return true;
+}
+bool VisualBoard::waitAndProcessAnswer(bool partidaGanada)
+{
+    u_int8_t banderasRecibidas=0;
+    u_int32_t nTurnoRecibido=-1;
+    MessagesSender::esperaRespuestaDeTurno(banderasRecibidas,nTurnoRecibido);
+    if(nTurnoRecibido!=NTURNO||(banderasRecibidas&CIERRE_FORZOSO))
+    {
+        cout<<"Error de envio de mensaje"<<endl;
+        return false;
+    }
+    if(partidaGanada&&(banderasRecibidas&PARTIDA_GANADA))
+    {
+        return true;
+    }
+    else if(partidaGanada==(banderasRecibidas&PARTIDA_GANADA))
+    {
+        return true;
+    }
+    else
+    {
+        cout<<"Error de comunicacion"<<endl;
+        return false;
+    }
+
 }
 
 VisualBoard::~VisualBoard()

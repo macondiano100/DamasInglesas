@@ -115,11 +115,9 @@ public:
         while(res!=NULL && !seEncontroHost){
             desc=socket(res->ai_family, res->ai_socktype,
                                 res->ai_protocol);
-            if( (is_ipv6=res->ai_family==AF_INET6)){//Conexión por IPv6
-                //cout<<"Conexion por IPv6"<<endl;
+            if( (is_ipv6=res->ai_family==AF_INET6)){
             }
-            else if(res->ai_family==AF_INET){//Conexión por IPv4
-                //cout<<"Conexion por IPv4"<<endl;
+            else if(res->ai_family==AF_INET){
             }
             seEncontroHost=
                     ::connect(desc, res->ai_addr, res->ai_addrlen)>=0;
@@ -189,27 +187,16 @@ public:
         return string(ip);
     }
     unsigned int getPort(){
-        //cout<<"Before sock4 port"<<endl;
-        if(sock4!=nullptr){
-            //cout<<"sock4 is not null"<<endl;
-        }
-        else{
-            //cout<<"sock4 is null"<<endl;
-        }
         return htons(sock4==NULL?sock6->sin6_port:sock4->sin_port);
     }
     MySocket* accept(){
         sockaddr_in *sock4=new sockaddr_in;
         sockaddr_in6 *sock6=new sockaddr_in6;
-        //cout<<"Antes de ipv6"<<endl;
         int desc=is_ipv6?
             ::accept (getDesc(),(sockaddr *) sock6, (socklen_t *) &TAMANIO_SOCKET_6):-1;
         if(desc<0){
             delete sock6;
-            //cout<<"Buscando en ipv4"<<endl;
             desc=::accept (getDesc(),(sockaddr *) sock4, (socklen_t *) &TAMANIO_SOCKET_4);
-            //cout<<"Antes del return"<<endl;
-            //cout<<"desc:" << desc<<endl;
             if(desc>0){
                 return new MySocket(desc,sock4);
             }

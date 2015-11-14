@@ -28,7 +28,6 @@ inline void respuesta_a_mensajeDeSiSigoVivo(MySocket* socket){
     mensaje[2]=SI_SIGO_VIVO;
     mensaje[3]='\0';
     socket->write(mensaje,3);
-    //cout<<"Mensaje enviado:"<<mensaje<<endl;
 }
 
 inline void fijaCoordenadas(char* mensaje,unsigned short& filaOrig,unsigned short& columnaOrig,
@@ -72,11 +71,13 @@ struct Movimiento
     fichaComida(fichaComida){}
     Movimiento():Movimiento(0,0,0,0,false){;}
 };
-inline vector<char> creaMensajeDeTurno(uint32_t numeroTurno,const vector<Movimiento>& movs)
+inline vector<char> creaMensajeDeTurno(uint32_t numeroTurno,const vector<Movimiento>& movs,bool partidaGanada)
 {
     vector<char> mensaje;
+    u_int8_t banderas=TURNO;
+    if(partidaGanada) banderas=banderas|PARTIDA_GANADA;
     mensaje.insert(mensaje.end(),begin(FIRMA_DEL_PROTOCOLO),end(FIRMA_DEL_PROTOCOLO));
-    mensaje.push_back(TURNO);//mensajeDeTurno
+    mensaje.push_back(banderas);//mensajeDeTurno
     numeroTurno=htonl(numeroTurno);
     mensaje.push_back(numeroTurno&(0xff));
     mensaje.push_back((numeroTurno>>8)&(0xff));
@@ -94,6 +95,18 @@ inline vector<char> creaMensajeDeTurno(uint32_t numeroTurno,const vector<Movimie
         mensaje.insert(mensaje.end(),begin(mensajeDeTurno),end(mensajeDeTurno));
     }
     return mensaje;
+}
+inline vector<char> creaMensajeDeRespuestaDeTurno(u_int8_t banderas,int numeroTurno){
+    vector<char> mensajeDeRespuesta;
+    unsigned short i;
+    mensajeDeRespuesta.insert(mensajeDeRespuesta.end(),FIRMA_DEL_PROTOCOLO,end(FIRMA_DEL_PROTOCOLO));
+    mensajeDeRespuesta.push_back(RESPUESTA_DE_TURNO|banderas);
+    numeroTurno=htonl(numeroTurno);
+    mensajeDeRespuesta.push_back(numeroTurno&(0xff));
+    mensajeDeRespuesta.push_back((numeroTurno>>8)&(0xff));
+    mensajeDeRespuesta.push_back((numeroTurno>>16)&(0xff));
+    mensajeDeRespuesta.push_back((numeroTurno>>24)&(0xff));//numero de turno
+    return mensajeDeRespuesta;
 }
 
 inline int fijaMensajeDeMovimiento(char* mensaje,unsigned short filaOrig,unsigned short columnaOrig,
@@ -122,7 +135,6 @@ inline vector<Movimiento> getMovementsFromMessage(char* mensaje)
         nMovimientos=ntohs(nMovimientos);
         cout<<"Movimientos:" << nMovimientos<<endl;
         for(i=0;i<nMovimientos;i++){
-            cout<<"Movimiento #"<< (i+1)<<endl;
             fijaCoordenadas(&mensaje[(9+i*3)],movimiento.filaOrigen,movimiento.colOrigen,
                     movimiento.filaDestino,movimiento.colDestino,movimiento.fichaComida);
             movimientos.push_back(movimiento);
