@@ -6,11 +6,12 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include "Dialogoconeccion.h"
+class Controler;
+#include "Controlador/controler.h"
 #include "modelo/connectionmanager.h"
 namespace Ui {
 class MainWindow;
 }
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -27,6 +28,7 @@ private:
     QProgressDialog *progresoConnecion;
     Ui::MainWindow *ui;
     QFutureWatcher<void> futureWatcher;
+    Controler* controlador;
 
 };
 

@@ -19,8 +19,8 @@ SOURCES +=\
     visual/visualboardsquare.cpp \
     main.cpp \
     modelo/Tablero.cpp \
-    visual/visualboardcontroler.cpp \
-    modelo/connectionmanager.cpp
+    modelo/connectionmanager.cpp \
+    Controlador/controler.cpp
 
 HEADERS  += \
     visual/Dialogoconeccion.h \
@@ -31,7 +31,6 @@ HEADERS  += \
     modelo/Ficha.h \
     modelo/Jugador.h \
     modelo/Tablero.h \
-    visual/visualboardcontroler.h \
     modelo/connectionmanager.h \
     modelo/connection/utilidadesVariadas.h \
     modelo/connection/utilidades.h \
@@ -39,7 +38,8 @@ HEADERS  += \
     modelo/connection/Exception.h \
     modelo/connection/MySocket.h \
     modelo/connection/NoSuchMessageExpectedException.h \
-    modelo/connection/socketExceptions.h
+    modelo/connection/socketExceptions.h \
+    Controlador/controler.h
 
 FORMS    += \
     visual/Dialogoconeccion.ui \

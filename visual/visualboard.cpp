@@ -51,7 +51,7 @@ void VisualBoard::casillaClicked()
         sourceSquare=qobject_cast<VisualBoardSquare *>(sender());
         if(!tablero.casillaVacia(sourceSquare->fila,sourceSquare->columna))
         {
-            highLightSquares();
+            highLightSquares(forcedMove);
             estadoActual=WAITING_DESTINY;
         }
         break;
@@ -96,7 +96,7 @@ void VisualBoard::casillaClicked()
                 turnOffSquares();
                 sourceSquare=destinySquare;
                 forcedMove=true;
-                highLightSquares();
+                highLightSquares(forcedMove);
                 validMovement=true;
                 break;
             }
@@ -172,7 +172,7 @@ void VisualBoard::invertirTablero()
     repaint();
 }
 #include <functional>
-void VisualBoard::highLightSquares()
+void VisualBoard::highLightSquares(bool forcedMove)
 {
     if(forcedMove)
     {
@@ -205,6 +205,8 @@ void VisualBoard::processMovement()
 {
     
 }
+
+
 ResultadoDeMovimiento VisualBoard::doMovements(vector<Movimiento> movimientos)
 {
     ResultadoDeMovimiento res=SIGUE_MOVIENDO;

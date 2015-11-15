@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dialogoConecccion= new DialogoConeccion(this);
     progresoConnecion=new QProgressDialog(tr("Esperando connecciones"),tr("Cancelar"),0,0,this);
     progresoConnecion->setFixedSize(width()/2,progresoConnecion->height());
+    controlador=new Controler(this,this->ui->visualBoard);
     connect(ui->action_nueva_partida,SIGNAL(triggered()),this,SLOT(iniciarPartida()));
     connect(progresoConnecion,&QProgressDialog::canceled,&MessagesSender::cancelarInicioPartida);
     connect(&futureWatcher,SIGNAL(finished()),progresoConnecion,SLOT(cancel()));

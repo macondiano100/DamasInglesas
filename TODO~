@@ -1,0 +1,3 @@
+ConnectionManager.cpp
+	Keep alive en esperarOponente
+	validar firma en esperarOponente

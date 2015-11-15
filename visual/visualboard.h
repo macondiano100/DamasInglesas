@@ -27,8 +27,6 @@ private:
     static constexpr int BOARD_SIZE=8;
     array<array<VisualBoardSquare*,BOARD_SIZE>,BOARD_SIZE> squares;
     QGridLayout* gridLayout;
-    void turnOffSquares();
-    QProgressDialog* progressDialogWaitingOponent;
 
     QFutureWatcher<void> futureWatcher;
     VisualBoardSquare* sourceSquare;
@@ -37,11 +35,13 @@ private:
 private slots:
     void casillaClicked();
 public:
+    void turnOffSquares();
+    QProgressDialog* progressDialogWaitingOponent;
     explicit VisualBoard(QWidget *parent = 0,int inverted=false);
     bool waitAndProcessOponentMoves(u_int8_t &banderasRespuesta);
     bool waitAndProcessAnswer(bool partidaGanada);
     void invertirTablero();
-    void highLightSquares();
+    void highLightSquares(bool forcedMove);
     void processMovement();
     ResultadoDeMovimiento doMovements(vector<Movimiento> movimientos);
     ~VisualBoard();

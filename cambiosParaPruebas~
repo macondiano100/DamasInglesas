@@ -1,0 +1,7 @@
+Eliminar:
+	VisualBoard.cpp
+		hacer Privada funcion waitAndProcessOponentsMoves
+	VisualBoarad.cpp
+		comentario en doMovements (validar que se pueda continuar)
+	connectionmnager.cpp
+		eliminar if-else de enviarInformacion de movimiento
