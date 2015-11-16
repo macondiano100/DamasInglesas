@@ -98,7 +98,6 @@ inline vector<char> creaMensajeDeTurno(uint32_t numeroTurno,const vector<Movimie
 }
 inline vector<char> creaMensajeDeRespuestaDeTurno(u_int8_t banderas,int numeroTurno){
     vector<char> mensajeDeRespuesta;
-    unsigned short i;
     mensajeDeRespuesta.insert(mensajeDeRespuesta.end(),FIRMA_DEL_PROTOCOLO,end(FIRMA_DEL_PROTOCOLO));
     mensajeDeRespuesta.push_back(RESPUESTA_DE_TURNO|banderas);
     numeroTurno=htonl(numeroTurno);

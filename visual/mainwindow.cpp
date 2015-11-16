@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     progresoConnecion=new QProgressDialog(tr("Esperando connecciones"),tr("Cancelar"),0,0,this);
     progresoConnecion->setFixedSize(width()/2,progresoConnecion->height());
     controlador=new Controler(this,this->ui->visualBoard);
+    ui->visualBoard->connectControler(controlador);
     connect(ui->action_nueva_partida,SIGNAL(triggered()),this,SLOT(iniciarPartida()));
     connect(progresoConnecion,&QProgressDialog::canceled,&MessagesSender::cancelarInicioPartida);
     connect(&futureWatcher,SIGNAL(finished()),progresoConnecion,SLOT(cancel()));
@@ -17,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::unirseAPartida()
 {
     dialogoConecccion->exec();
+    inicializarNumeroFichas();
+    controlador->iniciaJuegoComoOponente();
+    repaint();
 }
 
 void MainWindow::iniciarPartida()
@@ -27,9 +31,23 @@ void MainWindow::iniciarPartida()
     progresoConnecion->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     progresoConnecion->exec();
     futureWatcher.waitForFinished();
-    u_int8_t banderaeAEnviar;
-    this->ui->visualBoard->waitAndProcessOponentMoves(banderaeAEnviar);
-    MessagesSender::enviarRespuestaDeTurno(banderaeAEnviar,0);
+    inicializarNumeroFichas();
+    controlador->iniciaJuegoComoHost();
+    repaint();
+}
+
+void MainWindow::actualizarNumeroFichas()
+{
+    ui->labelNumeroFichasRojas->setText(QString::number(tablero.getPrimerJugador()->getFichasActuales()));
+    ui->labelNumeroFichasBlancas->setText(QString::number(tablero.getSegundoJugador()->getFichasActuales()));
+}
+
+void MainWindow::inicializarNumeroFichas()
+{
+    ui->groupBOxJugadorRojas->setTitle(QString(tablero.getPrimerJugador()->getNombre().c_str()));
+    ui->groupBoxJugadorBlancas->setTitle(QString(tablero.getSegundoJugador()->getNombre().c_str()));
+    ui->labelNumeroFichasRojas->setText(QString::number(tablero.getPrimerJugador()->getFichasActuales()));
+    ui->labelNumeroFichasBlancas->setText(QString::number(tablero.getSegundoJugador()->getFichasActuales()));
 }
 MainWindow::~MainWindow()
 {

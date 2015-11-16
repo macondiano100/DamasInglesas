@@ -24,6 +24,7 @@ public:
     static void enviarRespuestaDeTurno(u_int8_t banderas,int numeroTurno);
     static void esperaRespuestaDeTurno(u_int8_t &banderas,u_int32_t &numeroTurno);
     static void iniciarPartida();
+    static void closeConnection();
     static void unirse_a_partida(string host);
 
 };

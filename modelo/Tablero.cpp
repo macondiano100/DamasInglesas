@@ -58,6 +58,11 @@ bool Tablero::esMovimientoConSalto(Ficha *ficha, short filaO, short colO, short 
             fichaAComer!=nullptr&&
             (fichaAComer->getColor()!=ficha->getColor());
 }
+
+bool Tablero::casillaVacia(short fila, short col)
+{
+    return !consultar(fila,col);
+}
 bool Tablero::esMovimientoConSalto(short filaO, short colO, short filaD, short colD)
 {
     Ficha *ficha=consultar(filaO,colO);
@@ -98,8 +103,8 @@ ResultadoDeMovimiento Tablero::moverFicha(short filaOrig, short columnaOrig, sho
                                  DOBLE_MOV_Y_SIGUE_JUGANDO:
                                  ADQUIERE_DOBLE_MOVIMIENTO_LA_FICHA);
                     }
-                    cout<<"Piezas 1"<<primerJugador->getFichasActuales()<<endl;
-                    cout<<"Piezas 2"<<segundoJugador->getFichasActuales()<<endl;
+                    cout<<"Piezas 1 "<<primerJugador->getFichasActuales()<<endl;
+                    cout<<"Piezas 2 "<<segundoJugador->getFichasActuales()<<endl;
                     if(primerJugador->getFichasActuales()==0||segundoJugador->getFichasActuales()==0)
                         res=SE_HA_GANADO_LA_PARTIDA;
                 }
@@ -119,6 +124,26 @@ ResultadoDeMovimiento Tablero::moverFicha(short filaOrig, short columnaOrig, sho
         return NO_HAY_FICHA_QUE_MOVER;
     }
 
+}
+
+Tablero &Tablero::operator=(Tablero&& other)
+{
+    if(primerJugador!=nullptr)delete primerJugador;
+    if(segundoJugador!=nullptr)delete segundoJugador;
+    for(short i=0,j=getTamanio(),l;i<j;i++){
+        for(l=0;l<j;l++){
+            delete fichas[i][l];
+        }
+        delete fichas[i];
+    }
+    delete fichas;
+    fichas=other.fichas;
+    other.fichas=nullptr;
+    primerJugador=other.primerJugador;
+    segundoJugador=other.segundoJugador;
+    tamanio=other.tamanio;
+    piezasPorJugador=other.piezasPorJugador;
+    return *this;
 }
 
 void Tablero::setTamanio(short t){
@@ -164,8 +189,8 @@ bool Tablero::esMovimientoSimple
 
 Tablero::Tablero(short tamanio, Jugador *primerJugador, Jugador *segundoJugador){
     short i,j,piezasPorJugador,piezasAgregadas,preJ;
-    setPrimerJugador(primerJugador);
-    setSegundoJugador(segundoJugador);
+    this->primerJugador=primerJugador;
+    this->segundoJugador=segundoJugador;
     setTamanio(tamanio);
     setPiezasPorJugador(piezasPorJugador=12);
     if(primerJugador!=nullptr && segundoJugador!=nullptr){
@@ -212,13 +237,16 @@ Tablero::Tablero():Tablero(TAMANIO_TABLERO){
 }
 
 Tablero::~Tablero(){
-    for(short i=0,j=getTamanio(),l;i<j;i++){
-        for(l=0;l<j;l++){
-            delete fichas[i][l];
+    if(fichas!=nullptr)
+    {
+     for(short i=0,j=getTamanio(),l;i<j;i++){
+            for(l=0;l<j;l++){
+                delete fichas[i][l];
+            }
+            delete fichas[i];
         }
-        delete fichas[i];
+        delete fichas;
     }
-    delete fichas;
 }
 
 short Tablero::getPiezasPorJugador(){
@@ -252,3 +280,7 @@ bool Tablero::puedeContinuar(short fila, short col,Ficha* ficha){
     }
     return false;
 }
+
+Tablero::Tablero(Tablero &&other):primerJugador(other.primerJugador),
+    segundoJugador(other.segundoJugador),
+    tamanio(other.tamanio),piezasPorJugador(other.piezasPorJugador),fichas(other.fichas){}

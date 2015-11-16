@@ -9,6 +9,8 @@
 #include<QProgressDialog>
 #include<QFutureWatcher>
 #include<QFuture>
+class Controler;
+#include "Controlador/controler.h"
 #include "modelo/connection/utilidades.h"
 #include "visualboardsquare.h"
 using std::array;
@@ -27,22 +29,14 @@ private:
     static constexpr int BOARD_SIZE=8;
     array<array<VisualBoardSquare*,BOARD_SIZE>,BOARD_SIZE> squares;
     QGridLayout* gridLayout;
-
-    QFutureWatcher<void> futureWatcher;
-    VisualBoardSquare* sourceSquare;
     bool forcedMove;
-    vector<Movimiento> lastMovements;
-private slots:
-    void casillaClicked();
 public:
+    void connectControler(Controler *controler);
     void turnOffSquares();
     QProgressDialog* progressDialogWaitingOponent;
     explicit VisualBoard(QWidget *parent = 0,int inverted=false);
-    bool waitAndProcessOponentMoves(u_int8_t &banderasRespuesta);
-    bool waitAndProcessAnswer(bool partidaGanada);
     void invertirTablero();
-    void highLightSquares(bool forcedMove);
-    void processMovement();
+    void highLightSquares(bool forcedMove, VisualBoardSquare *sourceSquare);
     ResultadoDeMovimiento doMovements(vector<Movimiento> movimientos);
     ~VisualBoard();
 

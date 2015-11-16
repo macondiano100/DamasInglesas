@@ -15,7 +15,7 @@ void MessagesSender::inicializa_tablero()
     if(jug1) delete jug1;
     if(jug2) delete jug2;
     Tablero a;
-    tablero=a;
+    tablero=move(a);
 }
 
 void MessagesSender::cancelarInicioPartida()
@@ -42,9 +42,12 @@ void MessagesSender::esperarTurnoOponente(uint32_t &nTurno, vector<Movimiento> &
     char buffer[MAX_DATAGRAM_SIZE]={};
     if(socketCliente!=nullptr)
     {
-        while(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)<=0&&strncmp(buffer,FIRMA_DEL_PROTOCOLO,2))
+        while(true)
         {
-            //TODO keepAlive!!;
+            if(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)>=3)
+            {
+                if(strncmp(buffer,FIRMA_DEL_PROTOCOLO,2)==0) break;
+            }
         }
         memcpy(&banderas,&buffer[2],1);
         memcpy(&nTurno,&buffer[3],4);
@@ -92,9 +95,10 @@ void MessagesSender::esperaRespuestaDeTurno(u_int8_t &banderas, u_int32_t &numer
 
 
 void MessagesSender::unirse_a_partida(string host){
+    Tablero tablero;
     Jugador *jug1,*jug2;
-    jug1=new Jugador();
-    jug2=new Jugador();
+    jug1=new Jugador(COLOR_ROJO);
+    jug2=new Jugador(COLOR_BLANCO);
     jug2->setNombre("Diego Olvera");
     int i,j,l;
     char message[BUFFER+1];
@@ -139,6 +143,7 @@ void MessagesSender::unirse_a_partida(string host){
             jug1->setNombre(string(nombreDelJugador));
             tablero.setPrimerJugador(jug1);
             tablero.setSegundoJugador(jug2);
+            ::tablero=move(tablero);
 
         }catch(SocketReadException& exRead){
             cout<<exRead.getMessage();
@@ -150,12 +155,13 @@ void MessagesSender::unirse_a_partida(string host){
 
 
 void MessagesSender::iniciarPartida(){
+    Tablero tablero;
     MySocket* socketServidor;
     MySocket* socketCliente;
     Jugador *jug1,*jug2;
     QMutex mutex;
-    jug1=new Jugador();
-    jug2=new Jugador();
+    jug1=new Jugador(COLOR_ROJO);
+    jug2=new Jugador(COLOR_BLANCO);
     jug1->setNombre("Jose Vidal");
     socketServidor=new MySocket(PUERTO);
     socketServidor->setFlags(O_NONBLOCK);
@@ -207,13 +213,20 @@ void MessagesSender::iniciarPartida(){
         cout<<"IP:"<< jug2->getHost()<<endl;
         cout<<"Puerto:"<<socketCliente->getPort()<<endl;
         jug2->setNombre(string(nombreDelJugador));
-        mutex.lock();
         tablero.setPrimerJugador(jug1);
         tablero.setSegundoJugador(jug2);
+        mutex.lock();
         MessagesSender::socketCliente=socketCliente;
         MessagesSender::socketServidor=socketServidor;
+        ::tablero=move(tablero);
         mutex.unlock();
     }catch(SocketWriteException& ex){
         cout<<ex.getMessage()<<endl;
     }
+}
+
+void MessagesSender::closeConnection()
+{
+    if(socketServidor) delete socketServidor;
+    if(socketCliente)  delete socketCliente;
 }

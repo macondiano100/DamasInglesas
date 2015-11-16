@@ -20,6 +20,8 @@ void unirseAPartida();
 void iniciarPartida();
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void actualizarNumeroFichas();
+    void inicializarNumeroFichas();
 
     ~MainWindow();
 

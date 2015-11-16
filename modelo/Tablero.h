@@ -29,7 +29,6 @@ private:
     Jugador* segundoJugador;
     short tamanio;
     short piezasPorJugador;
-    Ficha*** fichas;
     void setTamanio(short t);
     void setPiezasPorJugador(short p);
     bool esCasillaDentroDelRango(short fila,short columna);
@@ -38,17 +37,16 @@ private:
     inline bool puedeContinuar(short fila,short col,Ficha* ficha);
 
 public:
+    Ficha*** fichas;
+    Tablero(Tablero &&other);
     Tablero(short tamanio,Jugador* primerJugador,Jugador* segundoJugador);
     Tablero(Jugador* primerJugador,Jugador* segundoJugador);
     Tablero(short tamanio);
     Tablero();
     ~Tablero();
-    inline bool esMovimientoConSalto(short filaO,short colO,short filaD,short colD);
-    inline bool esMovimientoConSalto(Ficha *ficha,short filaO,short colO,short filaD,short colD);
-    inline bool casillaVacia(short fila,short col)
-    {
-        return !consultar(fila,col);
-    }
+    bool esMovimientoConSalto(short filaO,short colO,short filaD,short colD);
+    bool esMovimientoConSalto(Ficha *ficha,short filaO,short colO,short filaD,short colD);
+    bool casillaVacia(short fila,short col);
     short getPiezasPorJugador();
     short getTamanio();
     Jugador* getPrimerJugador();
@@ -61,7 +59,8 @@ public:
     }
     bool esMovimientoValido(short filaO,short colO,short filaD,short colD);
     ResultadoDeMovimiento moverFicha(short filaOrig,short columnaOrig,short filaDest,
-        short columnaDest);
+                                     short columnaDest);
+    Tablero& operator=(Tablero&& other);
 };
 
 

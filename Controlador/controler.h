@@ -2,15 +2,17 @@
 #define CONTROLER_H
 class MainWindow;
 #include "visual/mainwindow.h"
+class VisualBoard;
 #include "visual/visualboard.h"
+class VisualBoardSquare;
+#include "visual/visualboardsquare.h"
 #include "modelo/connection/utilidades.h"
-namespace Ui {
-class Controler;
-}
-class Controler:QObject
+class Controler:public QObject
 {
+    Q_OBJECT
     MainWindow* mainWindow;
     VisualBoard* visualBoard;
+    VisualBoardSquare* sourceSquare;
     enum Estado
     {
         WAITING_SOURCE,
@@ -21,17 +23,20 @@ class Controler:QObject
     vector<Movimiento> lastMovements;
     bool forcedMove;
     u_int32_t NTURNO;
-    QFutureWatcher<void> futureWatcher;
     bool waitAndProcessAnswer(bool partidaGanada);
     void cierreForsozo();
-    void seGanoLaPartida();
-    bool waitAndProcessOponentMoves(u_int8_t &banderasRespuesta);
+    void seGanoLaPartida(Jugador *ganador);
+    function<Jugador*()> getJugadorUsuario;
+    function<Jugador*()> getJugadorOponente;
 public slots:
 void casillaClicked();
 public:
-
-    VisualBoardSquare* sourceSquare;
+    bool waitAndProcessOponentMoves(u_int8_t &banderasRespuesta);
+    void iniciaJuegoComoHost();
+    void iniciaJuegoComoOponente();
+    QFutureWatcher<void> futureWatcherEspearaOponente;
     Controler(MainWindow*,VisualBoard*);
+
 };
 
 #endif // CONTROLER_H

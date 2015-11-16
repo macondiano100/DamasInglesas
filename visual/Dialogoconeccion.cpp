@@ -12,6 +12,7 @@ DialogoConeccion::DialogoConeccion(QWidget *parent) :
 }
 void DialogoConeccion::unirse_a_partida(){
     MessagesSender::unirse_a_partida(ui->addresField->text().toStdString());
+    close();
 }
 
 DialogoConeccion::~DialogoConeccion()
