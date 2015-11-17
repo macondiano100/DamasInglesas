@@ -209,11 +209,8 @@ public:
         return desc>0?new MySocket(desc,sock6):NULL;
 
     }
-    int write(char* message,int length)throw (SocketWriteException){
+    int write(char* message,int length){
         int x=::write(desc,message,length);
-        if(x<0){
-            throw SocketWriteException("Ocurrio un error al escribir");
-        }
         return x;
     }
     int read(char* message,int length)throw(SocketReadException){

@@ -140,5 +140,18 @@ inline vector<Movimiento> getMovementsFromMessage(char* mensaje)
         }
         return movimientos;
 }
-
+inline vector<char> creaMensajeDeSigueVivo()
+{
+    vector<char> mensaje;
+    mensaje.insert(mensaje.end(),FIRMA_DEL_PROTOCOLO,end(FIRMA_DEL_PROTOCOLO));
+    mensaje.push_back(SIGUE_VIVO);
+    return mensaje;
+}
+inline vector<char> creaMensajeDeSiSigoVivo()
+{
+    vector<char> mensaje;
+    mensaje.insert(mensaje.end(),FIRMA_DEL_PROTOCOLO,end(FIRMA_DEL_PROTOCOLO));
+    mensaje.push_back(SI_SIGO_VIVO);
+    return mensaje;
+}
 #endif // UTILIDADES_H_INCLUDED

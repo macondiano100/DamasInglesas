@@ -12,6 +12,7 @@
 extern Tablero tablero;
 class MessagesSender {
     static bool esperarConecciones;
+    static bool responderKeepAlive;
     static constexpr int BUFFER=461;
     static  MySocket* socketServidor;
     static  MySocket* socketCliente;
@@ -26,8 +27,13 @@ public:
     static void iniciarPartida();
     static void closeConnection();
     static void unirse_a_partida(string host);
+    static void responderKeepAlives();
+    static void pararRespuestasKeepAlive();
 
 };
+
+
+
 
 
 

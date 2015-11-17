@@ -1,9 +1,11 @@
 #include "connectionmanager.h"
 
 bool MessagesSender::esperarConecciones;
+bool MessagesSender::responderKeepAlive;
 MySocket* MessagesSender::socketServidor=nullptr;
 MySocket* MessagesSender::socketCliente=nullptr;
 #include <QMutex>
+#include <chrono>
 template<typename T, std::size_t N>
 constexpr std::size_t size(T(&)[N]) { return N; } //tamaño de arreglo
 constexpr int MAX_DATAGRAM_SIZE=1055;
@@ -39,14 +41,53 @@ void MessagesSender::enviarInformacionDeTurno(int nTurno, vector<Movimiento> &mo
 }
 void MessagesSender::esperarTurnoOponente(uint32_t &nTurno, vector<Movimiento> &movements, uint8_t &banderas)
 {
+    using Timer=chrono::high_resolution_clock;
+    using TimePoint=chrono::high_resolution_clock::time_point;
     char buffer[MAX_DATAGRAM_SIZE]={};
+    bool succesReading;
+    static constexpr int MAX_KEEP_ALIVE=5;
+    int keepAliveSent=0;
+    vector<char> mensajeDeSigueVivo=creaMensajeDeSigueVivo();
+    TimePoint start,current;
+    start=Timer::now();
     if(socketCliente!=nullptr)
     {
         while(true)
         {
-            if(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)>=3)
+            current=Timer::now();
+            try{succesReading=socketCliente->read(buffer,MAX_DATAGRAM_SIZE)>=3&&
+                        strncmp(buffer,FIRMA_DEL_PROTOCOLO,2)==0;}
+            catch(Exception e){succesReading=false;}
+            if(succesReading)
             {
-                if(strncmp(buffer,FIRMA_DEL_PROTOCOLO,2)==0) break;
+                if(buffer[2]&TURNO)
+                {
+                    break;
+                }
+                else if(buffer[2]&SI_SIGO_VIVO)
+                {
+                    cout<<"----Recibida respuesta de keep alive"<<endl;
+                    keepAliveSent=0;
+                }
+                else
+                {
+                    cout<<"Que carajo recibi"<<endl;
+                }
+            }
+            else
+            {
+                if(chrono::duration_cast<chrono::milliseconds>(current-start).count()>=10000)
+                {
+                    cout<<"Sending KeepAlive"<<endl;
+                    start=Timer::now();
+                    keepAliveSent++;
+                    socketCliente->write(mensajeDeSigueVivo.data(),mensajeDeSigueVivo.size());
+                    if(keepAliveSent>MAX_KEEP_ALIVE)
+                    {
+                        banderas=CIERRE_FORZOSO;
+                        return;
+                    }
+                }
             }
         }
         memcpy(&banderas,&buffer[2],1);
@@ -76,12 +117,23 @@ void MessagesSender::enviarRespuestaDeTurno(u_int8_t banderas, int numeroTurno)
 void MessagesSender::esperaRespuestaDeTurno(u_int8_t &banderas, u_int32_t &numeroTurno)
 {
     char buffer[MAX_DATAGRAM_SIZE]={};
+    bool succesReading;
     if(socketCliente!=nullptr)
     {
-        while(socketCliente->read(buffer,MAX_DATAGRAM_SIZE)
-              <=0&&strncmp(buffer,FIRMA_DEL_PROTOCOLO,2))
+        while(true)
         {
-            //TODO keepAlive!!;
+            try{
+                succesReading=socketCliente->read(buffer,MAX_DATAGRAM_SIZE)
+                              >=3&&strncmp(buffer,FIRMA_DEL_PROTOCOLO,2)==0;
+            }
+            catch(Exception e)
+            {
+                succesReading=false;
+            }
+            if(succesReading)
+            {
+                if(buffer[2]&RESPUESTA_DE_TURNO)break;
+            }
         }
         memcpy(&banderas,&buffer[2],1);
         memcpy(&numeroTurno,&buffer[3],4);
@@ -93,6 +145,31 @@ void MessagesSender::esperaRespuestaDeTurno(u_int8_t &banderas, u_int32_t &numer
     }
 }
 
+void MessagesSender::responderKeepAlives()
+{
+    vector<char> mensajeDeSigoVivo=creaMensajeDeSiSigoVivo();
+    char buffer[MAX_DATAGRAM_SIZE+1];
+    bool succesReading;
+    responderKeepAlive=true;
+    if(socketCliente!=nullptr)
+    {
+        while(responderKeepAlive)
+        {
+            try{succesReading=socketCliente->read(buffer,MAX_DATAGRAM_SIZE)>=3&&
+                        strncmp(buffer,FIRMA_DEL_PROTOCOLO,2)==0;}
+            catch(Exception e){succesReading=false;}
+            if(succesReading&&buffer[2]&SIGUE_VIVO)
+                {
+                    cout<<"----Recibido un keep alive"<<endl;
+                    socketCliente->write(mensajeDeSigoVivo.data(),mensajeDeSigoVivo.size());
+                }
+        }
+    }
+}
+void MessagesSender::pararRespuestasKeepAlive()
+{
+    responderKeepAlive=false;
+}
 
 void MessagesSender::unirse_a_partida(string host){
     Tablero tablero;
@@ -120,6 +197,7 @@ void MessagesSender::unirse_a_partida(string host){
         try{
             bytes=socketCliente->read(message,BUFFER);
             socketCliente->write(mensaje_a_enviar,i);
+            socketCliente->setFlags(O_NONBLOCK);
             memcpy(firmaDelProtocolo,message,TAMANIO_FIRMA_DEL_PROTOCOLO);
             firmaDelProtocolo[TAMANIO_FIRMA_DEL_PROTOCOLO]='\0';
             bandera=message[2];
@@ -180,7 +258,6 @@ void MessagesSender::iniciarPartida(){
     while( (socketCliente=socketServidor->accept())==nullptr )
     {
         if(!esperarConecciones){
-            cout<<"Canceled"<<endl;
             delete socketServidor;
             return;
         }
@@ -216,6 +293,7 @@ void MessagesSender::iniciarPartida(){
         tablero.setPrimerJugador(jug1);
         tablero.setSegundoJugador(jug2);
         mutex.lock();
+        socketCliente->setFlags(O_NONBLOCK);
         MessagesSender::socketCliente=socketCliente;
         MessagesSender::socketServidor=socketServidor;
         ::tablero=move(tablero);

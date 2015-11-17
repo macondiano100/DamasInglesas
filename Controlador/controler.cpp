@@ -90,6 +90,7 @@ void Controler::casillaClicked()
                 {
                     bool ok,partidaGanada=res==SE_HA_GANADO_LA_PARTIDA;
                     mainWindow->actualizarNumeroFichas();
+                    MessagesSender::pararRespuestasKeepAlive();
                     MessagesSender::enviarInformacionDeTurno(NTURNO,lastMovements,partidaGanada);
                     lastMovements.clear();
                     ok=waitAndProcessAnswer(partidaGanada);
@@ -120,6 +121,7 @@ void Controler::casillaClicked()
                         seGanoLaPartida(getJugadorOponente());
                         return;
                     }
+                    QtConcurrent::run(MessagesSender::responderKeepAlives);
                     estadoActual=WAITING_SOURCE;
                }
 
@@ -168,6 +170,10 @@ bool Controler::waitAndProcessOponentMoves(u_int8_t &banderasRespuesta)
     futureWatcherEspearaOponente.setFuture(future);
     visualBoard->progressDialogWaitingOponent->exec();
     futureWatcherEspearaOponente.waitForFinished();
+    if(banderasRecibidas&CIERRE_FORZOSO)
+    {
+        return false;
+    }
     if(nTurnoRecibido!=NTURNO)
     {
       banderasRespuesta=banderasRespuesta|CIERRE_FORZOSO;
@@ -175,6 +181,7 @@ bool Controler::waitAndProcessOponentMoves(u_int8_t &banderasRespuesta)
     }
     ResultadoDeMovimiento resultadoOponente=visualBoard->doMovements(lastMovements);
     banderasRespuesta=RESPUESTA_DE_TURNO;
+
     switch (resultadoOponente) {
         case TURNO_FINALIZADO:
             if(banderasRecibidas&PARTIDA_GANADA) banderasRespuesta
@@ -212,6 +219,7 @@ void Controler::iniciaJuegoComoHost()
     getJugadorUsuario=[](){return tablero.getPrimerJugador();};
     getJugadorOponente=[](){return tablero.getSegundoJugador();};
     estadoActual=WAITING_SOURCE;
+    QtConcurrent::run(MessagesSender::responderKeepAlives);
 }
 
 void Controler::iniciaJuegoComoOponente()
@@ -220,11 +228,16 @@ void Controler::iniciaJuegoComoOponente()
     getJugadorUsuario=[](){return tablero.getSegundoJugador();};
     getJugadorOponente=[](){return tablero.getPrimerJugador();};
     u_int8_t banderaeAEnviar;
-    waitAndProcessOponentMoves(banderaeAEnviar);
+    bool ok=waitAndProcessOponentMoves(banderaeAEnviar);
     MessagesSender::enviarRespuestaDeTurno(banderaeAEnviar,NTURNO);
+    if(!ok)
+    {
+        cierreForsozo();
+        return;
+    }
     NTURNO++;
-    cout<<"----->"<<NTURNO<<endl;
     estadoActual=WAITING_SOURCE;
+    QtConcurrent::run(MessagesSender::responderKeepAlives);
 }
 void Controler::cierreForsozo()
 {
