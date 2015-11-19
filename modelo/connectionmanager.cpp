@@ -204,7 +204,6 @@ void MessagesSender::unirse_a_partida(string host){
             //bandera=ntohs(bandera);
             if(bandera!=INICIO_PARTIDA || strncmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO,2)!=0){
                 cout<<"No se recibio la bandera adecuada"<<endl;
-                socketCliente->shutdown();
                 socketCliente->close();
                 socketServidor->close();
                 return;
@@ -282,7 +281,6 @@ void MessagesSender::iniciarPartida(){
         cout<<"Nombre del jugador 2:"<<nombreDelJugador<<endl;
         if(strncmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO,2)!=0){
             cout<<"No se recibio la bandera adecuada"<<endl;
-            socketCliente->shutdown();
             socketCliente->close();
             return;
         }
@@ -305,6 +303,7 @@ void MessagesSender::iniciarPartida(){
 
 void MessagesSender::closeConnection()
 {
+    pararRespuestasKeepAlive();
     if(socketServidor) delete socketServidor;
     if(socketCliente)  delete socketCliente;
 }

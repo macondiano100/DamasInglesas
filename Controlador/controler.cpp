@@ -246,6 +246,7 @@ void Controler::cierreForsozo()
     messageBox.setText(tr("Ha habido un error de comunicación."));
     messageBox.exec();
     estadoActual=WAITING_OPONENT;
+    NTURNO=0;
 }
 void Controler::seGanoLaPartida(Jugador* ganador)
 {
