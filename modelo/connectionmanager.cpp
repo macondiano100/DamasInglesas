@@ -2,6 +2,7 @@
 
 bool MessagesSender::esperarConecciones;
 bool MessagesSender::responderKeepAlive;
+bool MessagesSender::estaConectado;
 MySocket* MessagesSender::socketServidor=nullptr;
 MySocket* MessagesSender::socketCliente=nullptr;
 #include <QMutex>
@@ -45,7 +46,7 @@ void MessagesSender::esperarTurnoOponente(uint32_t &nTurno, vector<Movimiento> &
     using TimePoint=chrono::high_resolution_clock::time_point;
     char buffer[MAX_DATAGRAM_SIZE]={};
     bool succesReading;
-    static constexpr int MAX_KEEP_ALIVE=5;
+    static constexpr int MAX_KEEP_ALIVE=3;
     int keepAliveSent=0;
     vector<char> mensajeDeSigueVivo=creaMensajeDeSigueVivo();
     TimePoint start,current;
@@ -171,8 +172,12 @@ void MessagesSender::pararRespuestasKeepAlive()
     responderKeepAlive=false;
 }
 
+bool MessagesSender::hayConeccion()
+{
+    return estaConectado;
+}
+
 void MessagesSender::unirse_a_partida(string host){
-    Tablero tablero;
     Jugador *jug1,*jug2;
     jug1=new Jugador(COLOR_ROJO);
     jug2=new Jugador(COLOR_BLANCO);
@@ -203,7 +208,7 @@ void MessagesSender::unirse_a_partida(string host){
             bandera=message[2];
             //bandera=ntohs(bandera);
             if(bandera!=INICIO_PARTIDA || strncmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO,2)!=0){
-                cout<<"No se recibio la bandera adecuada"<<endl;
+                estaConectado=false;
                 socketCliente->close();
                 socketServidor->close();
                 return;
@@ -218,10 +223,9 @@ void MessagesSender::unirse_a_partida(string host){
             jug1->setHost(socketCliente->getIp());
             cout<<"IP:"<< jug1->getHost()<<endl;
             jug1->setNombre(string(nombreDelJugador));
-            tablero.setPrimerJugador(jug1);
-            tablero.setSegundoJugador(jug2);
+            Tablero tablero(jug1,jug2);
             ::tablero=move(tablero);
-
+              estaConectado=true;
         }catch(SocketReadException& exRead){
             cout<<exRead.getMessage();
         }
@@ -232,7 +236,6 @@ void MessagesSender::unirse_a_partida(string host){
 
 
 void MessagesSender::iniciarPartida(){
-    Tablero tablero;
     MySocket* socketServidor;
     MySocket* socketCliente;
     Jugador *jug1,*jug2;
@@ -257,6 +260,7 @@ void MessagesSender::iniciarPartida(){
     while( (socketCliente=socketServidor->accept())==nullptr )
     {
         if(!esperarConecciones){
+            estaConectado=false;
             delete socketServidor;
             return;
         }
@@ -280,6 +284,7 @@ void MessagesSender::iniciarPartida(){
         cout<<"Firma del protocolo:"<<firmaDelProtocolo<<endl;
         cout<<"Nombre del jugador 2:"<<nombreDelJugador<<endl;
         if(strncmp(firmaDelProtocolo,FIRMA_DEL_PROTOCOLO,2)!=0){
+            estaConectado=false;
             cout<<"No se recibio la bandera adecuada"<<endl;
             socketCliente->close();
             return;
@@ -288,14 +293,14 @@ void MessagesSender::iniciarPartida(){
         cout<<"IP:"<< jug2->getHost()<<endl;
         cout<<"Puerto:"<<socketCliente->getPort()<<endl;
         jug2->setNombre(string(nombreDelJugador));
-        tablero.setPrimerJugador(jug1);
-        tablero.setSegundoJugador(jug2);
         mutex.lock();
         socketCliente->setFlags(O_NONBLOCK);
         MessagesSender::socketCliente=socketCliente;
         MessagesSender::socketServidor=socketServidor;
+        Tablero tablero(jug1,jug2);
         ::tablero=move(tablero);
         mutex.unlock();
+        estaConectado=true;
     }catch(SocketWriteException& ex){
         cout<<ex.getMessage()<<endl;
     }
@@ -304,6 +309,9 @@ void MessagesSender::iniciarPartida(){
 void MessagesSender::closeConnection()
 {
     pararRespuestasKeepAlive();
+    estaConectado=false;
     if(socketServidor) delete socketServidor;
     if(socketCliente)  delete socketCliente;
+    socketServidor=nullptr;
+    socketCliente=nullptr;
 }

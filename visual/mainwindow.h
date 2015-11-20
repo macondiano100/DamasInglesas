@@ -22,7 +22,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     void actualizarNumeroFichas();
     void inicializarNumeroFichas();
-
+    void closeEvent(QCloseEvent *)override;
     ~MainWindow();
 
 private:

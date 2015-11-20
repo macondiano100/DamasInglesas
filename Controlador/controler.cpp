@@ -44,6 +44,8 @@ void Controler::casillaClicked()
         }
         else{
             aux=sourceSquare;
+            bool fichaComida=tablero.esMovimientoConSalto(sourceSquare->fila,sourceSquare->columna,
+                                                          destinySquare->fila,destinySquare->columna);
             ResultadoDeMovimiento res=tablero.moverFicha(
                         sourceSquare->fila,sourceSquare->columna,
                         destinySquare->fila,destinySquare->columna
@@ -84,7 +86,7 @@ void Controler::casillaClicked()
                 lastMovements.
                         emplace_back(aux->fila,aux->columna,
                                      destinySquare->fila,destinySquare->columna,
-                                     sigueMoviendo);
+                                     fichaComida);
                 visualBoard->repaint();
                 if(!sigueMoviendo)
                 {
@@ -136,7 +138,12 @@ bool Controler::waitAndProcessAnswer(bool partidaGanada)
 {
     u_int8_t banderasRecibidas=0;
     u_int32_t nTurnoRecibido=-1;
-    MessagesSender::esperaRespuestaDeTurno(banderasRecibidas,nTurnoRecibido);
+    auto llamada=bind(&MessagesSender::esperaRespuestaDeTurno,
+                      ref(banderasRecibidas),ref(nTurnoRecibido));
+    QFutureWatcher<void> futureWatcher;
+    QFuture<void> future=QtConcurrent::run(llamada);
+    futureWatcher.setFuture(future);
+    futureWatcher.waitForFinished();
     if(nTurnoRecibido!=NTURNO||(banderasRecibidas&CIERRE_FORZOSO))
     {
         cout<<"Error de envio de mensaje"<<endl;

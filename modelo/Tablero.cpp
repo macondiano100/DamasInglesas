@@ -66,7 +66,7 @@ bool Tablero::casillaVacia(short fila, short col)
 bool Tablero::esMovimientoConSalto(short filaO, short colO, short filaD, short colD)
 {
     Ficha *ficha=consultar(filaO,colO);
-    return esMovimientoConSalto(ficha,filaO,colO,filaD,colD);
+    return ficha!=nullptr&&esMovimientoConSalto(ficha,filaO,colO,filaD,colD);
 }
 ResultadoDeMovimiento Tablero::moverFicha(short filaOrig, short columnaOrig, short filaDest, short columnaDest){
     Ficha* ficha=consultar(filaOrig,columnaOrig);
@@ -208,20 +208,28 @@ Tablero::Tablero(short tamanio, Jugador *primerJugador, Jugador *segundoJugador)
     /*Agregamos las fichas del primer jugador
             es decir, fichas rojas en casillas negras, 0..2...n
         */
-    for(i=piezasAgregadas=0,j=1;piezasAgregadas<piezasPorJugador;i++){
-        for(preJ=j;j<tamanio;j+=2,piezasAgregadas++){
-            agregarFicha(i,j,COLOR_BLANCO);
+    if(primerJugador)
+    {
+        for(i=piezasAgregadas=0,j=1;piezasAgregadas<piezasPorJugador;i++){
+            for(preJ=j;j<tamanio;j+=2,piezasAgregadas++){
+                agregarFicha(i,j,COLOR_BLANCO);
+            }
+            j=preJ==0?1:0;
         }
-        j=preJ==0?1:0;
+
     }
     /*Agregamos las fichas del segundo jugador
             es decir, fichas blanca en casillas rojas, 1..3...n
         */
-    for(piezasAgregadas=0,i=tamanio-1,j=0;piezasAgregadas<piezasPorJugador;i--){
-        for(preJ=j;j<tamanio;j+=2,piezasAgregadas++){
-            agregarFicha(i,j,COLOR_ROJO);
+    if(segundoJugador)
+    {
+        for(piezasAgregadas=0,i=tamanio-1,j=0;piezasAgregadas<piezasPorJugador;i--){
+            for(preJ=j;j<tamanio;j+=2,piezasAgregadas++){
+                agregarFicha(i,j,COLOR_ROJO);
+            }
+            j=preJ==0?1:0;
+
         }
-        j=preJ==0?1:0;
 
     }
 }

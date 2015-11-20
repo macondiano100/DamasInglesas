@@ -15,12 +15,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(progresoConnecion,&QProgressDialog::canceled,&MessagesSender::cancelarInicioPartida);
     connect(&futureWatcher,SIGNAL(finished()),progresoConnecion,SLOT(cancel()));
 }
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    MessagesSender::closeConnection();
+}
+
 void MainWindow::unirseAPartida()
 {
     dialogoConecccion->exec();
-    inicializarNumeroFichas();
-    controlador->iniciaJuegoComoOponente();
-    repaint();
+    if(MessagesSender::hayConeccion())
+    {
+        inicializarNumeroFichas();
+        controlador->iniciaJuegoComoOponente();
+        repaint();
+    }
 }
 
 void MainWindow::iniciarPartida()
@@ -31,9 +39,11 @@ void MainWindow::iniciarPartida()
     progresoConnecion->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
     progresoConnecion->exec();
     futureWatcher.waitForFinished();
-    inicializarNumeroFichas();
-    controlador->iniciaJuegoComoHost();
-    repaint();
+    if(MessagesSender::hayConeccion()){
+        inicializarNumeroFichas();
+        controlador->iniciaJuegoComoHost();
+        repaint();
+    }
 }
 
 void MainWindow::actualizarNumeroFichas()

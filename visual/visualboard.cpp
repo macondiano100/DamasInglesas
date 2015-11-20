@@ -104,13 +104,21 @@ void VisualBoard::highLightSquares(bool forcedMove,VisualBoardSquare* sourceSqua
 ResultadoDeMovimiento VisualBoard::doMovements(vector<Movimiento> movimientos)
 {
     ResultadoDeMovimiento res=SIGUE_MOVIENDO;
+    bool fichaComida;
     for(Movimiento mov:movimientos)
     {
+        fichaComida=tablero.esMovimientoConSalto(mov.filaOrigen,mov.colOrigen,mov.filaDestino,mov.colDestino);
         if(res!=SIGUE_MOVIENDO&&res!=DOBLE_MOV_Y_SIGUE_JUGANDO) break;
         if(!tablero.esMovimientoValido(mov.filaOrigen,mov.colOrigen,mov.filaDestino,mov.colDestino))
+        {
             break;
+        }
         res=tablero.moverFicha(mov.filaOrigen,mov.colOrigen,mov.filaDestino,mov.colDestino);
-        if((res==SIGUE_MOVIENDO||res==DOBLE_MOV_Y_SIGUE_JUGANDO)!=mov.fichaComida)break;
+        if(fichaComida!=mov.fichaComida)
+        {
+            break;
+        }
+        cout<<"Lammando repaint"<<endl;
         repaint();
         esperar(300);
     }

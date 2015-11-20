@@ -9,6 +9,7 @@ DialogoConeccion::DialogoConeccion(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->boton_conectar,SIGNAL(clicked()),this,SLOT(unirse_a_partida()));
+    connect(ui->pushButton,&QPushButton::clicked,this,&QDialog::close);
 }
 void DialogoConeccion::unirse_a_partida(){
     MessagesSender::unirse_a_partida(ui->addresField->text().toStdString());
