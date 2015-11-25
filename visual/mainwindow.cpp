@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     dialogoConecccion= new DialogoConeccion(this);
+    dialogoOpciones=new DialogoOpciones(this);
+    dialogoOpciones->setModal(Qt::WindowModal);
     progresoConnecion=new QProgressDialog(tr("Esperando connecciones"),tr("Cancelar"),0,0,this);
     progresoConnecion->setFixedSize(width()/2,progresoConnecion->height());
     controlador=new Controler(this,this->ui->visualBoard);
@@ -14,14 +16,29 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->action_nueva_partida,SIGNAL(triggered()),this,SLOT(iniciarPartida()));
     connect(progresoConnecion,&QProgressDialog::canceled,&MessagesSender::cancelarInicioPartida);
     connect(&futureWatcher,SIGNAL(finished()),progresoConnecion,SLOT(cancel()));
+    connect(ui->actionOpciones,SIGNAL(triggered()),this,SLOT(lanzaVentanaOpciones()));
 }
+void MainWindow::lanzaVentanaOpciones()
+{
+    dialogoOpciones->setNameFieldContent(controlador->getNombreUsuario());
+    dialogoOpciones->setPortFieldContent(controlador->getPuerto());
+    dialogoOpciones->exec();
+    if(dialogoOpciones->wasOkPressed())
+    {
+        controlador->setNombreUsuario(dialogoOpciones->getNameFieldContent());
+        controlador->setPuerto(dialogoOpciones->getPortFieldContent());
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent *)
 {
     MessagesSender::closeConnection();
 }
 
+
 void MainWindow::unirseAPartida()
 {
+    dialogoConecccion->setNombreUsuario(controlador->getNombreUsuario());
     dialogoConecccion->exec();
     if(MessagesSender::hayConeccion())
     {
@@ -33,7 +50,8 @@ void MainWindow::unirseAPartida()
 
 void MainWindow::iniciarPartida()
 {
-    QFuture<void> future=QtConcurrent::run(&MessagesSender::iniciarPartida);
+    QFuture<void> future=QtConcurrent::run(&MessagesSender::iniciarPartida,controlador->getPuerto(),
+                                           controlador->getNombreUsuario());
     futureWatcher.setFuture(future);
     progresoConnecion->setModal(Qt::WindowModal);
     progresoConnecion->setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
@@ -62,5 +80,6 @@ void MainWindow::inicializarNumeroFichas()
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete dialogoOpciones;
     delete dialogoConecccion;
 }

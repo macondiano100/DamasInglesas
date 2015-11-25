@@ -137,17 +137,27 @@ public:
 
     }
     ~MySocket(){
+        cout<<"Here0";
         if(resSave!=nullptr){
+            cout<<"Here1"<<endl;
             freeaddrinfo(resSave);
         }
         else if(sock6!=nullptr){
+            cout<<"Here2"<<endl;
             delete sock6;
 
         }
         else if(sock4!=nullptr){
+            cout<<"Here3"<<endl;
             delete sock4;
         }
-        close();
+        try{
+            close();
+        }
+        catch(SocketException e)
+        {
+
+        }
     }
     void close()throw (SocketException){
         int x=::close(desc);

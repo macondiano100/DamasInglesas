@@ -9,7 +9,7 @@ enum Estado
     WAITING_OPONENT
 };
 Controler::Controler(MainWindow *mainWindow, VisualBoard *visualBoard):mainWindow(mainWindow),
-    visualBoard(visualBoard)
+    visualBoard(visualBoard),nombreJugador("Antonio Vidal"),puerto("12345")
 {
     estadoActual=WAITING_OPONENT;
     forcedMove=false;
@@ -245,6 +245,26 @@ void Controler::iniciaJuegoComoOponente()
     NTURNO++;
     estadoActual=WAITING_SOURCE;
     QtConcurrent::run(MessagesSender::responderKeepAlives);
+}
+
+string Controler::getNombreUsuario()
+{
+    return nombreJugador;
+}
+
+string Controler::getPuerto()
+{
+    return puerto;
+}
+
+void Controler::setNombreUsuario(string nombre)
+{
+    nombreJugador=nombre;
+}
+
+void Controler::setPuerto(string puerto)
+{
+    this->puerto=puerto;
 }
 void Controler::cierreForsozo()
 {

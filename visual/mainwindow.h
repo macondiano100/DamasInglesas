@@ -9,6 +9,7 @@
 class Controler;
 #include "Controlador/controler.h"
 #include "modelo/connectionmanager.h"
+#include "visual/dialogoopciones.h"
 namespace Ui {
 class MainWindow;
 }
@@ -18,6 +19,7 @@ class MainWindow : public QMainWindow
 public slots:
 void unirseAPartida();
 void iniciarPartida();
+void lanzaVentanaOpciones();
 public:
     explicit MainWindow(QWidget *parent = 0);
     void actualizarNumeroFichas();
@@ -28,6 +30,7 @@ public:
 private:
     DialogoConeccion *dialogoConecccion;
     QProgressDialog *progresoConnecion;
+    DialogoOpciones *dialogoOpciones;
     Ui::MainWindow *ui;
     QFutureWatcher<void> futureWatcher;
     Controler* controlador;

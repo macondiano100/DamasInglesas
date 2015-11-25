@@ -20,7 +20,8 @@ SOURCES +=\
     main.cpp \
     modelo/Tablero.cpp \
     modelo/connectionmanager.cpp \
-    Controlador/controler.cpp
+    Controlador/controler.cpp \
+    visual/dialogoopciones.cpp
 
 HEADERS  += \
     visual/Dialogoconeccion.h \
@@ -39,11 +40,13 @@ HEADERS  += \
     modelo/connection/MySocket.h \
     modelo/connection/NoSuchMessageExpectedException.h \
     modelo/connection/socketExceptions.h \
-    Controlador/controler.h
+    Controlador/controler.h \
+    visual/dialogoopciones.h
 
 FORMS    += \
     visual/Dialogoconeccion.ui \
-    visual/mainwindow.ui
+    visual/mainwindow.ui \
+    visual/dialogoopciones.ui
 
 RESOURCES += \
     visual/res.qrc

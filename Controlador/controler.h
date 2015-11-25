@@ -26,6 +26,8 @@ class Controler:public QObject
     bool waitAndProcessAnswer(bool partidaGanada);
     void cierreForsozo();
     void seGanoLaPartida(Jugador *ganador);
+    string nombreJugador;
+    string puerto;
     function<Jugador*()> getJugadorUsuario;
     function<Jugador*()> getJugadorOponente;
 public slots:
@@ -34,6 +36,10 @@ public:
     bool waitAndProcessOponentMoves(u_int8_t &banderasRespuesta);
     void iniciaJuegoComoHost();
     void iniciaJuegoComoOponente();
+    string getNombreUsuario();
+    string getPuerto();
+    void setNombreUsuario(string);
+    void setPuerto(string);
     QFutureWatcher<void> futureWatcherEspearaOponente;
     Controler(MainWindow*,VisualBoard*);
 

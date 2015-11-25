@@ -170,6 +170,7 @@
     </property>
     <addaction name="action_nueva_partida"/>
     <addaction name="actionUnirse_A_Partida"/>
+    <addaction name="actionOpciones"/>
    </widget>
    <widget class="QMenu" name="menuAyuda">
     <property name="title">
@@ -209,6 +210,11 @@
   <action name="actionInstrucciones">
    <property name="text">
     <string>Instrucciones</string>
+   </property>
+  </action>
+  <action name="actionOpciones">
+   <property name="text">
+    <string>Opciones</string>
    </property>
   </action>
  </widget>
